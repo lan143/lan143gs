@@ -22,40 +22,19 @@
  * SOFTWARE.
  */
 
-#include "Arduino.h"
-#include "NavigationService.h"
-#include "../factories/GNSSDriverFactory.h"
+#include "UBloxDriver.h"
+#include "mapping.h"
 
-NavigationService::NavigationService() {
-    _imu = new IMU();
-    _gnss = GNSSDriverFactory::build();
+UBloxDriver::UBloxDriver() {
+    _serial = new SoftwareSerial(GNSS_RX, GNSS_TX);
 }
 
-void NavigationService::init() {
-    _imu->init();
-    _gnss->init();
+void UBloxDriver::init() {
+    _serial->begin(4800);
 }
 
-void NavigationService::aimingUpdate(unsigned long currentTime) {
-    // 1. Get current Euler angles
-    _imu->getAttitudeData(currentTime);
-    // 2. Calculate setpoint for yaw and pitch axis
-    // 3. Run PID regulator for yaw and pitch axis
-    // 4. Execute PID sum in servos
-}
-
-void NavigationService::coordsUpdate() {
-    _gnssData = _gnss->getData();
-}
-
-void NavigationService::update() {
-    if ((millis() - this->_lastUpdateAimingTime >= AIMING_LOOP_TIME) || this->_lastUpdateAimingTime == 0) {
-        this->aimingUpdate(millis());
-        this->_lastUpdateAimingTime = millis();
-    }
-
-    if ((millis() - this->_lastUpdateGNSSTime >= GNNS_LOOP_TIME) || this->_lastUpdateGNSSTime == 0) {
-        this->coordsUpdate();
-        this->_lastUpdateGNSSTime = millis();
+gnssData_t UBloxDriver::getData() {
+    if (_serial->available()) {
+        int8_t byte = _serial->read();
     }
 }

@@ -22,19 +22,21 @@
  * SOFTWARE.
  */
 
-#ifndef H_GNSS_H
-#define H_GNSS_H
+#include "IMU.h"
+#include "../factories/IMUDriverFactory.h"
+#include "../factories/CompassDriverFactory.h"
 
-typedef struct gnssData_s {
-    float lat;
-    float lng;
-    float height;
-} gnssData_t;
+IMU::IMU() {
+    _imu = ImuDriverFactory::build();
+    _compass = CompassDriverFactory::build();
+}
 
-class GNSS {
-public:
-    virtual void init();
-    virtual gnssData_t getData();
-};
+void IMU::init() {
+    _imu->init();
+    _compass->init();
+}
 
-#endif
+attitudeData_t IMU::getAttitudeData(unsigned long currentTime) {
+    float dT = (currentTime - previousIMUUpdateTime) * 1e-3;
+    previousIMUUpdateTime = currentTime;
+}

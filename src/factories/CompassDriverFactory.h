@@ -1,6 +1,3 @@
-#ifndef H_COMPASS_H
-#define H_COMPASS_H
-
 /**
  * MIT License
  *
@@ -25,17 +22,20 @@
  * SOFTWARE.
  */
 
-typedef struct compassData_s {
-    int16_t x;
-    int16_t y;
-    int16_t z;
-} compassData_t;
+#ifndef H_COMPASS_FACTORY_H
+#define H_COMPASS_FACTORY_H
 
-class Compass {
+#include "../drivers/CompassDriver.h"
+#include "../drivers/qmc5883ldriver.h"
+#include "../mapping.h"
+
+class CompassDriverFactory {
 public:
-    virtual void init();
-
-    virtual compassData_t getData();
+    static CompassDriver* build() {
+        #ifdef COMPASS_TYPE_QMC5883L
+            return new QMC5883LDriver();
+        #endif
+    }
 };
 
 #endif

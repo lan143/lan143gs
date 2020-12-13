@@ -25,10 +25,10 @@
 #ifndef H_QMC5883L_DRIVER_H
 #define H_QMC5883L_DRIVER_H
 
-#include "compass.h"
+#include "CompassDriver.h"
 #include <QMC5883L.h>
 
-class QMC5883LDriver : public Compass {
+class QMC5883LDriver : public CompassDriver {
 public:
     QMC5883LDriver();
 

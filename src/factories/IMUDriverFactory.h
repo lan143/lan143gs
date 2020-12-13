@@ -25,15 +25,15 @@
 #ifndef H_IMU_FACTORY_H
 #define H_IMU_FACTORY_H
 
-#include "../drivers/imu.h"
-#include "../drivers/mpu6050driver.h"
+#include "../drivers/IMUDriver.h"
+#include "../drivers/MPU6050Driver.h"
 #include "../mapping.h"
 
-class ImuFactory {
+class ImuDriverFactory {
 public:
-    static Imu* build() {
+    static IMUDriver* build() {
         #ifdef IMU_TYPE_MPU6050
-            return new Mpu6050Driver();
+            return new MPU6050Driver();
         #endif
     }
 };

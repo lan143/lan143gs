@@ -22,19 +22,19 @@
  * SOFTWARE.
  */
 
-#include "m8qdriver.h"
-#include "mapping.h"
+#ifndef H_GNSS_H
+#define H_GNSS_H
 
-M8QDriver::M8QDriver() {
-    _serial = new SoftwareSerial(GNSS_RX, GNSS_TX);
-}
+typedef struct gnssData_s {
+    float lat;
+    float lng;
+    float height;
+} gnssData_t;
 
-M8QDriver::init() {
-    _serial->begin(4800);
-}
+class GNSSDriver {
+public:
+    virtual void init();
+    virtual gnssData_t getData();
+};
 
-M8QDriver::update() {
-    if (_serial->available()) {
-        int8_t byte = _serial->read();
-    }
-}
+#endif

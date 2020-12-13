@@ -24,7 +24,7 @@
  */
 
 #include "Arduino.h"
-#include "qmc5883ldriver.h"
+#include "QMC5883LDriver.h"
 
 QMC5883LDriver::QMC5883LDriver() {
     _compass = new QMC5883L();

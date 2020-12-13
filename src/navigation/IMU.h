@@ -22,20 +22,28 @@
  * SOFTWARE.
  */
 
-#ifndef H_GNSS_FACTORY_H
-#define H_GNSS_FACTORY_H
+#ifndef H_IMU_H
+#define H_IMU_H
 
-#include "../drivers/gnss.h"
-#include "../drivers/fakeGNSSdriver.h"
-#include "../mapping.h"
+#include "../drivers/IMUDriver.h"
+#include "../drivers/CompassDriver.h"
+#include "../common/quaternion.h"
 
-class GNSSFactory {
+typedef struct attitudeData_s {
+} attitudeData_t;
+
+class IMU {
 public:
-    static GNSS* build() {
-        #ifdef GNSS_TYPE_FAKE
-            return new FakeGNSSDriver();
-        #endif
-    }
+    IMU();
+    void init();
+
+    attitudeData_t getAttitudeData(unsigned long currentTime);
+
+protected:
+    IMUDriver* _imu;
+    CompassDriver* _compass;
+
+    unsigned long previousIMUUpdateTime;
 };
 
 #endif

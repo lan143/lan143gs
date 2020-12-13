@@ -22,20 +22,23 @@
  * SOFTWARE.
  */
 
-#ifndef H_COMPASS_FACTORY_H
-#define H_COMPASS_FACTORY_H
+#ifndef H_IMU_DRIVER_H
+#define H_IMU_DRIVER_H
 
-#include "../drivers/compass.h"
-#include "../drivers/qmc5883ldriver.h"
-#include "../mapping.h"
+typedef struct imuData_s {
+    float accX;
+    float accY;
+    float accZ;
+    float gyroX;
+    float gyroY;
+    float gyroZ;
+} imuData_t;
 
-class CompassFactory {
+class IMUDriver {
 public:
-    static Compass* build() {
-        #ifdef COMPASS_TYPE_QMC5883L
-            return new QMC5883LDriver();
-        #endif
-    }
+    virtual void init();
+
+    virtual imuData_t getData();
 };
 
 #endif

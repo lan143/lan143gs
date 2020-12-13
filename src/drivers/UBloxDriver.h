@@ -22,23 +22,20 @@
  * SOFTWARE.
  */
 
-#ifndef H_IMU_H
-#define H_IMU_H
+#ifndef H_M8Q_DRIVER_H
+#define H_M8Q_DRIVER_H
 
-typedef struct imuData_s {
-    float accX;
-    float accY;
-    float accZ;
-    float gyroX;
-    float gyroY;
-    float gyroZ;
-} imuData_t;
+#include <SoftwareSerial.h>
+#include "GNSSDriver.h"
 
-class Imu {
+class UBloxDriver : public GNSSDriver {
 public:
-    virtual void init();
+    UBloxDriver();
+    void init();
+    gnssData_t getData();
 
-    virtual imuData_t getData();
+protected:
+    SoftwareSerial* _serial;
 };
 
 #endif

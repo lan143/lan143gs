@@ -25,9 +25,8 @@
 #ifndef H_NAVIGATION_SERVISE_H
 #define H_NAVIGATION_SERVISE_H
 
-#include "../drivers/imu.h"
-#include "../drivers/compass.h"
-#include "../drivers/gnss.h"
+#include "IMU.h"
+#include "../drivers/GNSSDriver.h"
 #include "../mapping.h"
 
 #define AIMING_LOOP_TIME 10 // 100 Hz
@@ -41,13 +40,12 @@ public:
     void update();
 protected:
 
-    void aimingUpdate();
+    void aimingUpdate(unsigned long currentTime);
     void coordsUpdate();
 
 protected:
-    Imu* _imu;
-    Compass* _compass;
-    GNSS* _gnss;
+    IMU* _imu;
+    GNSSDriver* _gnss;
 
     gnssData_s _gnssData;
 

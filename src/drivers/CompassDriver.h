@@ -1,3 +1,6 @@
+#ifndef H_COMPASS_H
+#define H_COMPASS_H
+
 /**
  * MIT License
  *
@@ -22,21 +25,19 @@
  * SOFTWARE.
  */
 
-#ifndef H_M8Q_DRIVER_H
-#define H_M8Q_DRIVER_H
+#include "Arduino.h"
 
-#include <SoftwareSerial.h>
-#include "gnss.h"
+typedef struct compassData_s {
+    int16_t x;
+    int16_t y;
+    int16_t z;
+} compassData_t;
 
-class M8QDriver : public GNSS {
+class CompassDriver {
 public:
-    M8QDriver();
-    void init();
+    virtual void init();
 
-    void update();
-
-protected:
-    SoftwareSerial* _serial;
+    virtual compassData_t getData();
 };
 
 #endif

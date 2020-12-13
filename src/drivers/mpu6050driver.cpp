@@ -22,13 +22,13 @@
  * SOFTWARE.
  */
 
-#include "mpu6050driver.h"
+#include "MPU6050Driver.h"
 
-Mpu6050Driver::Mpu6050Driver() {
+MPU6050Driver::MPU6050Driver() {
     _mpu = new MPU6050(IMU_ADDR);
 }
 
-void Mpu6050Driver::init() {
+void MPU6050Driver::init() {
     _mpu->initialize();
     _mpu->setFullScaleAccelRange(MPU6050_ACCEL_FS_8);
     _mpu->setFullScaleGyroRange(MPU6050_GYRO_FS_1000);
@@ -36,7 +36,7 @@ void Mpu6050Driver::init() {
     Serial.println(_mpu->testConnection() ? "MPU6050 OK" : "MPU6050 FAIL");
 }
 
-imuData_t Mpu6050Driver::getData() {
+imuData_t MPU6050Driver::getData() {
     int16_t ax, ay, az;
     int16_t gx, gy, gz;
     _mpu->getMotion6(&ax, &ay, &az, &gx, &gy, &gz);

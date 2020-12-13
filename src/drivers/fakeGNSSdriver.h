@@ -25,9 +25,9 @@
 #ifndef H_FAKE_GNSS_DRIVER_H
 #define H_FAKE_GNSS_DRIVER_H
 
-#include "gnss.h"
+#include "GNSSDriver.h"
 
-class FakeGNSSDriver : public GNSS {
+class FakeGNSSDriver : public GNSSDriver {
 public:
     void init() {
         

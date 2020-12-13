@@ -25,14 +25,14 @@
 #ifndef H_MPU6050_DRIVER_H
 #define H_MPU6050_DRIVER_H
 
-#include "imu.h"
+#include "IMUDriver.h"
 #include "I2Cdev.h"
 #include "MPU6050.h"
 #include "mapping.h"
 
-class Mpu6050Driver : public Imu {
+class MPU6050Driver : public IMUDriver {
 public:
-    Mpu6050Driver();
+    MPU6050Driver();
 
     void init();
     imuData_t getData();
