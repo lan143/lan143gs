@@ -33,6 +33,8 @@ public:
     QMC5883LDriver();
 
     void init();
+    bool isReady() { return _compass->ready() > 0; }
+    bool isCalibated() { return _compass->readHeading() > 0; }
 
     compassData_t getData();
 

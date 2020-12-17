@@ -38,7 +38,18 @@ void NavigationService::init() {
 
 void NavigationService::aimingUpdate(unsigned long currentTime) {
     // 1. Get current Euler angles
-    _imu->getAttitudeData(currentTime);
+    attitudeEulerAngles_t attitudeData = _imu->getAttitudeData(currentTime);
+    Serial.print("Roll: ");
+    Serial.print(attitudeData.values.roll);
+    Serial.print("\t");
+
+    Serial.print("Pitch: ");
+    Serial.print(attitudeData.values.pitch);
+    Serial.print("\t");
+
+    Serial.print("Yaw: ");
+    Serial.print(attitudeData.values.yaw);
+    Serial.println();
     // 2. Calculate setpoint for yaw and pitch axis
     // 3. Run PID regulator for yaw and pitch axis
     // 4. Execute PID sum in servos

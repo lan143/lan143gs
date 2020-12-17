@@ -25,6 +25,12 @@
 #ifndef H_IMU_DRIVER_H
 #define H_IMU_DRIVER_H
 
+#include "../common/axis.h"
+#include "../common/calibration.h"
+
+#define CALIBRATING_GYRO_TIME_MS            2000
+#define ACC_CLIPPING_THRESHOLD_G            7.9f
+
 typedef struct imuData_s {
     float accX;
     float accY;
@@ -36,9 +42,32 @@ typedef struct imuData_s {
 
 class IMUDriver {
 public:
-    virtual void init();
+    void init();
 
-    virtual imuData_t getData();
+    imuData_t getData();
+protected:
+    virtual void driverInit();
+    virtual void updateData();
+
+    void updateGyroData();
+    void updateAccData();
+
+    void performGyroCalibration();
+
+protected:
+    float gyroScale;
+    int32_t accScale;
+    bool accIsClipped;
+    int32_t accClipCount;
+
+    imuData_t data;
+
+    int16_t gyroADCRaw[XYZ_AXIS_COUNT];
+    int16_t accADCRaw[XYZ_AXIS_COUNT];
+
+    zeroCalibrationVector_t gyroCalibration;
+
+    int16_t gyroZero[XYZ_AXIS_COUNT];
 };
 
 #endif

@@ -24,30 +24,30 @@
 
 #include "MPU6050Driver.h"
 
+#define BUFFER_SIZE 100
+
 MPU6050Driver::MPU6050Driver() {
     _mpu = new MPU6050(IMU_ADDR);
 }
 
-void MPU6050Driver::init() {
+void MPU6050Driver::driverInit() {
     _mpu->initialize();
-    _mpu->setFullScaleAccelRange(MPU6050_ACCEL_FS_8);
-    _mpu->setFullScaleGyroRange(MPU6050_GYRO_FS_1000);
+    _mpu->setFullScaleAccelRange(MPU6050_ACCEL_FS_16);
+    _mpu->setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
+
+    gyroScale = 1.0f / 16.4f;
+    accScale = 256 * 4;
+    
+    _mpu->setXAccelOffset(0);
+    _mpu->setYAccelOffset(0);
+    _mpu->setZAccelOffset(0);
+    _mpu->setXGyroOffset(0);
+    _mpu->setYGyroOffset(0);
+    _mpu->setZGyroOffset(0);
 
     Serial.println(_mpu->testConnection() ? "MPU6050 OK" : "MPU6050 FAIL");
 }
 
-imuData_t MPU6050Driver::getData() {
-    int16_t ax, ay, az;
-    int16_t gx, gy, gz;
-    _mpu->getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
-
-    imuData_t data;
-    data.accX = (float)ax / 32768 * 8;
-    data.accY = (float)ay / 32768 * 8;
-    data.accZ = (float)az / 32768 * 8;
-    data.gyroX = (float)gx / 32768 * 1000;
-    data.gyroY = (float)gy / 32768 * 1000;
-    data.gyroZ = (float)gz / 32768 * 1000;
-
-    return data;
+void MPU6050Driver::updateData() {
+    _mpu->getMotion6(&accADCRaw[0], &accADCRaw[1], &accADCRaw[2], &gyroADCRaw[0], &gyroADCRaw[1], &gyroADCRaw[2]);
 }

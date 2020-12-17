@@ -34,8 +34,11 @@ class MPU6050Driver : public IMUDriver {
 public:
     MPU6050Driver();
 
-    void init();
-    imuData_t getData();
+    void updateData();
+
+protected:
+    void driverInit();
+
 protected:
     MPU6050* _mpu;
 };

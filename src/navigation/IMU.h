@@ -25,25 +25,64 @@
 #ifndef H_IMU_H
 #define H_IMU_H
 
+#include "../common/axis.h"
 #include "../drivers/IMUDriver.h"
 #include "../drivers/CompassDriver.h"
 #include "../common/quaternion.h"
 
-typedef struct attitudeData_s {
-} attitudeData_t;
+typedef struct imuRuntimeConfig_s {
+    float dcm_kp_acc;
+    float dcm_ki_acc;
+    float dcm_kp_mag;
+    float dcm_ki_mag;
+} imuRuntimeConfig_t;
+
+typedef union {
+    int16_t raw[XYZ_AXIS_COUNT];
+    struct {
+        // absolute angle inclination in multiple of 0.1 degree    180 deg = 1800
+        int16_t roll;
+        int16_t pitch;
+        int16_t yaw;
+    } values;
+} attitudeEulerAngles_t;
 
 class IMU {
 public:
     IMU();
     void init();
 
-    attitudeData_t getAttitudeData(unsigned long currentTime);
+    attitudeEulerAngles_t getAttitudeData(unsigned long currentTime);
+
+protected:
+    void mahonyAHRSupdate(
+        float dt,
+        const fpVector3_t * gyroBF,
+        const fpVector3_t * accBF,
+        const fpVector3_t * magBF,
+        bool useCOG,
+        float courseOverGround,
+        float accWScaler,
+        float magWScaler
+    );
+    attitudeEulerAngles_t getEulerAngles(void);
+    void setMagneticDeclination(float declinationDeg);
+    void computeRotationMatrix(void);
+    void checkAndResetOrientationQuaternion(const fpQuaternion_t * quat, const fpVector3_t * accBF);
+    bool validateQuaternion(const fpQuaternion_t * quat);
+    void resetOrientationQuaternion(const fpVector3_t * accBF);
 
 protected:
     IMUDriver* _imu;
     CompassDriver* _compass;
 
-    unsigned long previousIMUUpdateTime;
+    imuRuntimeConfig_t _imuRuntimeConfig;
+
+    unsigned long _previousIMUUpdateTime;
+
+    fpQuaternion_t _orientation;
+    float _rMat[3][3];
+    fpVector3_t _vCorrectedMagNorth;
 };
 
 #endif

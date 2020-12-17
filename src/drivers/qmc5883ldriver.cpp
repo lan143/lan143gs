@@ -32,6 +32,9 @@ QMC5883LDriver::QMC5883LDriver() {
 
 void QMC5883LDriver::init() {
     _compass->init();
+
+    _config = new compassConfig_t();
+    _config->mag_declination = 0;
 }
 
 compassData_t QMC5883LDriver::getData() {

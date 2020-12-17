@@ -1,6 +1,3 @@
-#ifndef H_COMPASS_H
-#define H_COMPASS_H
-
 /**
  * MIT License
  *
@@ -25,32 +22,9 @@
  * SOFTWARE.
  */
 
-#include "Arduino.h"
+#ifndef H_TIME_H
+#define H_TIME_H
 
-typedef struct compassData_s {
-    int16_t x;
-    int16_t y;
-    int16_t z;
-} compassData_t;
-
-typedef struct compassConfig_s {
-    int16_t mag_declination;                // Get your magnetic declination from here : http://magnetic-declination.com/
-                                            // For example, -6deg 37min, = -637 Japan, format is [sign]dddmm (degreesminutes) default is zero.
-} compassConfig_t;
-
-class CompassDriver {
-public:
-    virtual void init();
-    compassConfig_t* getConfig()
-    {
-        return _config;
-    }
-    virtual bool isReady();
-    virtual bool isCalibated();
-
-    virtual compassData_t getData();
-protected:
-    compassConfig_t* _config;
-};
+typedef unsigned long timeMs_t ;
 
 #endif
