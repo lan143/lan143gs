@@ -23,11 +23,11 @@
  */
 
 #include "Arduino.h"
-#include "IMUDriver.h"
+#include "AccGyroDriver.h"
 #include "../common/vector.h"
 #include "../common/calibration.h"
 
-void IMUDriver::init() {
+void AccGyroDriver::init() {
     driverInit();
 
     for (int axis = 0; axis < 3; axis++) {
@@ -41,7 +41,7 @@ void IMUDriver::init() {
     zeroCalibrationStartV(&gyroCalibration, CALIBRATING_GYRO_TIME_MS, 32, false);
 }
 
-imuData_t IMUDriver::getData() {
+imuData_t AccGyroDriver::getData() {
     updateData();
     updateGyroData();
     updateAccData();
@@ -49,7 +49,7 @@ imuData_t IMUDriver::getData() {
     return data;
 }
 
-void IMUDriver::updateAccData() {
+void AccGyroDriver::updateAccData() {
     /*for (int axis = 0; axis < 3; axis++) {
         accADCRaw[axis] = _accFilter[axis].applyFilter(accADCRaw[axis]);
     }*/
@@ -75,7 +75,7 @@ void IMUDriver::updateAccData() {
     }
 }
 
-void IMUDriver::performAccCalibration() {
+void AccGyroDriver::performAccCalibration() {
     for (int axis = 0; axis < 3; axis++) {
         // Reset a[axis] at start of calibration
         if (accCalibrationState == STATE_NOT_STARTED) {
@@ -101,7 +101,7 @@ void IMUDriver::performAccCalibration() {
     accCalibrationCycles--;
 }
 
-void IMUDriver::updateGyroData() {
+void AccGyroDriver::updateGyroData() {
     if (zeroCalibrationIsCompleteV(&gyroCalibration)) {
         int32_t gyroADCtmp[XYZ_AXIS_COUNT];
 
@@ -122,7 +122,7 @@ void IMUDriver::updateGyroData() {
     }
 }
 
-void IMUDriver::performGyroCalibration() {
+void AccGyroDriver::performGyroCalibration() {
     fpVector3_t v;
 
     v.v[0] = gyroADCRaw[0];

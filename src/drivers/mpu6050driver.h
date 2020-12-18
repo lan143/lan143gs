@@ -25,12 +25,12 @@
 #ifndef H_MPU6050_DRIVER_H
 #define H_MPU6050_DRIVER_H
 
-#include "IMUDriver.h"
+#include "AccGyroDriver.h"
 #include "I2Cdev.h"
 #include "MPU6050.h"
 #include "mapping.h"
 
-class MPU6050Driver : public IMUDriver {
+class MPU6050Driver : public AccGyroDriver {
 public:
     MPU6050Driver();
 

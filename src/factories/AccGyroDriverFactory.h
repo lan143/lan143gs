@@ -25,13 +25,13 @@
 #ifndef H_IMU_FACTORY_H
 #define H_IMU_FACTORY_H
 
-#include "../drivers/IMUDriver.h"
+#include "../drivers/AccGyroDriver.h"
 #include "../drivers/MPU6050Driver.h"
 #include "../mapping.h"
 
-class ImuDriverFactory {
+class AccGyroDriverFactory {
 public:
-    static IMUDriver* build() {
+    static AccGyroDriver* build() {
         #ifdef IMU_TYPE_MPU6050
             return new MPU6050Driver();
         #endif

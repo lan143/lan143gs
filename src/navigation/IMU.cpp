@@ -24,19 +24,19 @@
 
 #include "IMU.h"
 #include "../common/maths.h"
-#include "../factories/IMUDriverFactory.h"
+#include "../factories/AccGyroDriverFactory.h"
 #include "../factories/CompassDriverFactory.h"
 
 #define SPIN_RATE_LIMIT             20
 #define MAX_ACC_SQ_NEARNESS         25      // 25% or G^2, accepted acceleration of (0.87 - 1.12G)
 
 IMU::IMU() {
-    _imu = ImuDriverFactory::build();
+    _accGyro = AccGyroDriverFactory::build();
     _compass = CompassDriverFactory::build();
 }
 
 void IMU::init() {
-    _imu->init();
+    _accGyro->init();
     _compass->init();
 
     _imuRuntimeConfig.dcm_kp_acc = 2500;             // 0.25 * 10000
@@ -60,7 +60,7 @@ attitudeEulerAngles_t IMU::getAttitudeData(unsigned long currentTime) {
     fpVector3_t imuMeasuredAccelBF;
     fpVector3_t imuMeasuredRotationBF;
     fpVector3_t measuredMagBF;
-    imuData_t imuData = _imu->getData();
+    imuData_t imuData = _accGyro->getData();
     bool magIsReady = _compass->isReady() && _compass->isCalibated();
 
     if (magIsReady) {

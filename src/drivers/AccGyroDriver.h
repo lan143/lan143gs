@@ -22,8 +22,8 @@
  * SOFTWARE.
  */
 
-#ifndef H_IMU_DRIVER_H
-#define H_IMU_DRIVER_H
+#ifndef H_ACC_GYRO_DRIVER_H
+#define H_ACC_GYRO_DRIVER_H
 
 #include "../common/axis.h"
 #include "../common/calibration.h"
@@ -48,7 +48,7 @@ typedef struct imuData_s {
     float gyroZ;
 } imuData_t;
 
-class IMUDriver {
+class AccGyroDriver {
 public:
     void init();
 

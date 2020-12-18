@@ -26,7 +26,7 @@
 #define H_IMU_H
 
 #include "../common/axis.h"
-#include "../drivers/IMUDriver.h"
+#include "../drivers/AccGyroDriver.h"
 #include "../drivers/CompassDriver.h"
 #include "../common/quaternion.h"
 
@@ -80,7 +80,7 @@ protected:
     void accGetMeasuredAcceleration(fpVector3_t *measuredAcc);
 
 protected:
-    IMUDriver* _imu;
+    AccGyroDriver* _accGyro;
     CompassDriver* _compass;
 
     imuRuntimeConfig_t _imuRuntimeConfig;
