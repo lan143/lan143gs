@@ -26,7 +26,8 @@
 #define H_COMPASS_FACTORY_H
 
 #include "../drivers/CompassDriver.h"
-#include "../drivers/qmc5883ldriver.h"
+#include "../drivers/QMC5883LDriver.h"
+#include "../drivers/FakeCompassDriver.h"
 #include "../mapping.h"
 
 class CompassDriverFactory {
@@ -34,6 +35,8 @@ public:
     static CompassDriver* build() {
         #ifdef COMPASS_TYPE_QMC5883L
             return new QMC5883LDriver();
+        #else
+            return new FakeCompassDriver();
         #endif
     }
 };

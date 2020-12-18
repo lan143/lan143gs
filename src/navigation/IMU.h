@@ -72,6 +72,13 @@ protected:
     bool validateQuaternion(const fpQuaternion_t * quat);
     void resetOrientationQuaternion(const fpVector3_t * accBF);
 
+    bool useFastGains(void);
+    float getPGainScaleFactor(void);
+    float calculateAccelerometerWeight(const float dT, fpVector3_t imuMeasuredAccelBF);
+
+    void gyroGetMeasuredRotationRate(fpVector3_t *measuredRotationRate);
+    void accGetMeasuredAcceleration(fpVector3_t *measuredAcc);
+
 protected:
     IMUDriver* _imu;
     CompassDriver* _compass;

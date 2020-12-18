@@ -22,32 +22,32 @@
  * SOFTWARE.
  */
 
-#include "MPU6050Driver.h"
+#ifndef H_FAKE_COMPASS_DRIVER_H
+#define H_FAKE_COMPASS_DRIVER_H
 
-#define BUFFER_SIZE 100
+#include "CompassDriver.h"
 
-MPU6050Driver::MPU6050Driver() {
-    _mpu = new MPU6050(IMU_ADDR);
-}
-
-void MPU6050Driver::driverInit() {
-    _mpu->initialize();
-    _mpu->setFullScaleAccelRange(MPU6050_ACCEL_FS_16);
-    _mpu->setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
-
-    gyroScale = 1.0f / 16.4f;
-    accScale = 512 * 4;
+class FakeCompassDriver : public CompassDriver {
+public:
+    void init() {
+        _config->mag_declination = 0;
+    }
     
-    _mpu->setXAccelOffset(0);
-    _mpu->setYAccelOffset(0);
-    _mpu->setZAccelOffset(0);
-    _mpu->setXGyroOffset(0);
-    _mpu->setYGyroOffset(0);
-    _mpu->setZGyroOffset(0);
+    bool isReady() {
+        return true;
+    }
+    bool isCalibated() {
+        return true;
+    }
 
-    Serial.println(_mpu->testConnection() ? "MPU6050 OK" : "MPU6050 FAIL");
-}
+    compassData_t getData() {
+        compassData_t data;
+        data.x = 4096;
+        data.y = 0;
+        data.z = 0;
 
-void MPU6050Driver::updateData() {
-    _mpu->getMotion6(&accADCRaw[0], &accADCRaw[1], &accADCRaw[2], &gyroADCRaw[0], &gyroADCRaw[1], &gyroADCRaw[2]);
-}
+        return data;
+    }
+};
+
+#endif

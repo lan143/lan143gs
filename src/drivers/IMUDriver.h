@@ -27,9 +27,17 @@
 
 #include "../common/axis.h"
 #include "../common/calibration.h"
+#include "../filters/BiquadFilter.h"
 
 #define CALIBRATING_GYRO_TIME_MS            2000
 #define ACC_CLIPPING_THRESHOLD_G            7.9f
+#define CALIBRATING_ACC_CYCLES              400
+
+enum AccCalibrationState {
+    STATE_NOT_STARTED = 0,
+    STATE_IN_PROGRESS = 1,
+    STATE_COMPLETE = 2,
+};
 
 typedef struct imuData_s {
     float accX;
@@ -53,6 +61,7 @@ protected:
     void updateAccData();
 
     void performGyroCalibration();
+    void performAccCalibration();
 
 protected:
     float gyroScale;
@@ -65,9 +74,16 @@ protected:
     int16_t gyroADCRaw[XYZ_AXIS_COUNT];
     int16_t accADCRaw[XYZ_AXIS_COUNT];
 
+    BiquadFilter _accFilter[XYZ_AXIS_COUNT];
+
+    uint8_t accCalibrationState = STATE_NOT_STARTED;
+    uint32_t accCalibrationCycles = CALIBRATING_ACC_CYCLES;
+    int64_t _a[XYZ_AXIS_COUNT];
+
     zeroCalibrationVector_t gyroCalibration;
 
     int16_t gyroZero[XYZ_AXIS_COUNT];
+    int16_t accZero[XYZ_AXIS_COUNT];
 };
 
 #endif

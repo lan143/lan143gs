@@ -23,10 +23,12 @@
  */
 
 #include "IMU.h"
+#include "../common/maths.h"
 #include "../factories/IMUDriverFactory.h"
 #include "../factories/CompassDriverFactory.h"
 
 #define SPIN_RATE_LIMIT             20
+#define MAX_ACC_SQ_NEARNESS         25      // 25% or G^2, accepted acceleration of (0.87 - 1.12G)
 
 IMU::IMU() {
     _imu = ImuDriverFactory::build();
@@ -76,12 +78,19 @@ attitudeEulerAngles_t IMU::getAttitudeData(unsigned long currentTime) {
     imuMeasuredRotationBF.v[Y] = imuData.gyroY;
     imuMeasuredRotationBF.v[Z] = imuData.gyroZ;
 
+    gyroGetMeasuredRotationRate(&imuMeasuredRotationBF);    // Calculate gyro rate in body frame in rad/s
+    accGetMeasuredAcceleration(&imuMeasuredAccelBF);        // Calculate accel in body frame in cm/s/s
+
+    const float magWeight = getPGainScaleFactor() * 1.0f;
+    const float accWeight = getPGainScaleFactor() * calculateAccelerometerWeight(dT, imuMeasuredAccelBF);
+    const bool useAcc = (accWeight > 0.001f);
+
     mahonyAHRSupdate(dT, &imuMeasuredRotationBF,
-                        &imuMeasuredAccelBF,
+                        useAcc ? &imuMeasuredAccelBF : NULL,
                         magIsReady ? &measuredMagBF : NULL,
                         false, 0,
-                        1.0f,
-                        magIsReady ? 1.0f : 0.0f);
+                        accWeight,
+                        magWeight);
 
     return getEulerAngles();
 }
@@ -347,4 +356,45 @@ void IMU::resetOrientationQuaternion(const fpVector3_t * accBF)
     _orientation.q3 = 0.0f;
 
     quaternionNormalize(&_orientation, &_orientation);
+}
+
+bool IMU::useFastGains(void) {
+    return millis() < 20000;
+}
+
+float IMU::getPGainScaleFactor(void) {
+    if (useFastGains()) {
+        return 10.0f;
+    } else {
+        return 1.0f;
+    }
+}
+
+float IMU::calculateAccelerometerWeight(const float dT, fpVector3_t imuMeasuredAccelBF) {
+    // If centrifugal test passed - do the usual "nearness" style check
+    float accMagnitudeSq = 0;
+
+    for (int axis = 0; axis < 3; axis++) {
+        accMagnitudeSq += imuMeasuredAccelBF.v[axis] * imuMeasuredAccelBF.v[axis];
+    }
+
+    // Magnitude^2 in percent of G^2
+    const float nearness = ABS(100 - (accMagnitudeSq * 100));
+    const float accWeight_Nearness = (nearness > MAX_ACC_SQ_NEARNESS) ? 0.0f : 1.0f;
+
+    return accWeight_Nearness;
+}
+
+void IMU::gyroGetMeasuredRotationRate(fpVector3_t *measuredRotationRate)
+{
+    for (int axis = 0; axis < 3; axis++) {
+        measuredRotationRate->v[axis] = DEGREES_TO_RADIANS(measuredRotationRate->v[axis]);
+    }
+}
+
+void IMU::accGetMeasuredAcceleration(fpVector3_t *measuredAcc)
+{
+    for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+        measuredAcc->v[axis] *= GRAVITY_CMSS;
+    }
 }

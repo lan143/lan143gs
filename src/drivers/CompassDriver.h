@@ -1,6 +1,3 @@
-#ifndef H_COMPASS_H
-#define H_COMPASS_H
-
 /**
  * MIT License
  *
@@ -24,6 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+#ifndef H_COMPASS_H
+#define H_COMPASS_H
 
 #include "Arduino.h"
 

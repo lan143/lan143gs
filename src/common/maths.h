@@ -34,6 +34,8 @@
 #define M_LN2f      0.69314718055994530942f
 #define M_Ef        2.71828182845904523536f
 
+#define GRAVITY_CMSS    980.665f
+
 #define RAD    (M_PIf / 180.0f)
 
 #define DEGREES_TO_CENTIDEGREES(angle) ((angle) * 100)

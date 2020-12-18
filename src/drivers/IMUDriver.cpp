@@ -30,6 +30,13 @@
 void IMUDriver::init() {
     driverInit();
 
+    for (int axis = 0; axis < 3; axis++) {
+        uint16_t accLpfCutHz = 5;
+        uint32_t accSampleTimeUs = 1e3 / 5;
+
+        _accFilter[axis].init(accLpfCutHz, accSampleTimeUs, BIQUAD_Q, FILTER_LPF);
+    }
+
     Serial.println("Start gyro calibration");
     zeroCalibrationStartV(&gyroCalibration, CALIBRATING_GYRO_TIME_MS, 32, false);
 }
@@ -43,6 +50,18 @@ imuData_t IMUDriver::getData() {
 }
 
 void IMUDriver::updateAccData() {
+    /*for (int axis = 0; axis < 3; axis++) {
+        accADCRaw[axis] = _accFilter[axis].applyFilter(accADCRaw[axis]);
+    }*/
+
+    if (accCalibrationState != STATE_COMPLETE) {
+        performAccCalibration();
+    }
+
+    for (int axis = 0; axis < 3; axis++) {
+        accADCRaw[axis] -= accZero[axis];
+    }
+
     data.accX = (float)accADCRaw[X] / accScale;
     data.accY = (float)accADCRaw[Y] / accScale;
     data.accZ = (float)accADCRaw[Z] / accScale;
@@ -54,6 +73,32 @@ void IMUDriver::updateAccData() {
     } else {
         accIsClipped = false;
     }
+}
+
+void IMUDriver::performAccCalibration() {
+    for (int axis = 0; axis < 3; axis++) {
+        // Reset a[axis] at start of calibration
+        if (accCalibrationState == STATE_NOT_STARTED) {
+            _a[axis] = 0;
+            accCalibrationState = STATE_IN_PROGRESS;
+        }
+
+        // Sum up CALIBRATING_ACC_CYCLES readings
+        _a[axis] += accADCRaw[axis];
+
+        // Reset global variables to prevent other code from using un-calibrated data
+        accADCRaw[axis] = 0;
+    }
+
+    if (accCalibrationCycles == 0) {
+        accZero[X] = (_a[X] + (CALIBRATING_ACC_CYCLES / 2)) / CALIBRATING_ACC_CYCLES;
+        accZero[Y] = (_a[Y] + (CALIBRATING_ACC_CYCLES / 2)) / CALIBRATING_ACC_CYCLES;
+        accZero[Z] = (_a[Z] + (CALIBRATING_ACC_CYCLES / 2)) / CALIBRATING_ACC_CYCLES - accScale;
+        accCalibrationState = STATE_COMPLETE;
+        Serial.println("Acc calibration complete");
+    }
+
+    accCalibrationCycles--;
 }
 
 void IMUDriver::updateGyroData() {

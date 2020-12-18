@@ -22,32 +22,27 @@
  * SOFTWARE.
  */
 
-#include "MPU6050Driver.h"
+#ifndef H_BIQUAD_FILTER_H
+#define H_BIQUAD_FILTER_H
 
-#define BUFFER_SIZE 100
+#include "Arduino.h"
 
-MPU6050Driver::MPU6050Driver() {
-    _mpu = new MPU6050(IMU_ADDR);
-}
+#define BIQUAD_Q 1.0f / sqrtf(2.0f)     /* quality factor - 2nd order butterworth*/
 
-void MPU6050Driver::driverInit() {
-    _mpu->initialize();
-    _mpu->setFullScaleAccelRange(MPU6050_ACCEL_FS_16);
-    _mpu->setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
+typedef enum {
+    FILTER_LPF,    // 2nd order Butterworth section
+    FILTER_NOTCH,
+    FILTER_BPF,
+} biquadFilterType_e;
 
-    gyroScale = 1.0f / 16.4f;
-    accScale = 512 * 4;
-    
-    _mpu->setXAccelOffset(0);
-    _mpu->setYAccelOffset(0);
-    _mpu->setZAccelOffset(0);
-    _mpu->setXGyroOffset(0);
-    _mpu->setYGyroOffset(0);
-    _mpu->setZGyroOffset(0);
+class BiquadFilter {
+public:
+    void init(float filterFreq, uint32_t refreshRate, float Q, biquadFilterType_e filterType);
 
-    Serial.println(_mpu->testConnection() ? "MPU6050 OK" : "MPU6050 FAIL");
-}
+    float applyFilter(float input);
+protected:
+    float _b0, _b1, _b2, _a1, _a2;
+    float _x1, _x2, _y1, _y2;
+};
 
-void MPU6050Driver::updateData() {
-    _mpu->getMotion6(&accADCRaw[0], &accADCRaw[1], &accADCRaw[2], &gyroADCRaw[0], &gyroADCRaw[1], &gyroADCRaw[2]);
-}
+#endif
