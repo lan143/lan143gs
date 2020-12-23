@@ -53,6 +53,9 @@ public:
     void init();
 
     imuData_t getData();
+
+    void startAccCalibration();
+    AccCalibrationState getAccCalibrationState() { return accCalibrationState; }
 protected:
     virtual void driverInit();
     virtual void updateData();
@@ -76,7 +79,7 @@ protected:
 
     BiquadFilter _accFilter[XYZ_AXIS_COUNT];
 
-    uint8_t accCalibrationState = STATE_NOT_STARTED;
+    AccCalibrationState accCalibrationState = STATE_NOT_STARTED;
     uint32_t accCalibrationCycles = CALIBRATING_ACC_CYCLES;
     int64_t _a[XYZ_AXIS_COUNT];
 

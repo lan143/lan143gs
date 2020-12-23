@@ -1,4 +1,3 @@
-
 /**
  * MIT License
  *
@@ -23,27 +22,35 @@
  * SOFTWARE.
  */
 
-#include "Arduino.h"
-#include "QMC5883LDriver.h"
+#ifndef H_NAVIGATION_SERVISE_H
+#define H_NAVIGATION_SERVISE_H
 
-QMC5883LDriver::QMC5883LDriver() {
-    _compass = new QMC5883L();
-}
+#include "IMU.h"
+#include "../drivers/GNSSDriver.h"
+#include "../mapping.h"
 
-void QMC5883LDriver::init() {
-    _compass->init();
+#define AIMING_LOOP_TIME 10 // 100 Hz
+#define GNNS_LOOP_TIME 100 // 10 Hz
 
-    Serial.print("QMC5883L: ");
-    Serial.println(_compass->ready() ? "OK" : "FAIL");
+class Navigation {
+public:
+    Navigation();
+    void init();
 
-    _config = new compassConfig_t();
-    _config->mag_declination = 0;
-}
+    void update();
+protected:
 
-compassData_t QMC5883LDriver::getData() {
-    int16_t t;
-    compassData_t data;
-    _compass->readRaw(&data.x, &data.y, &data.z, &t);
+    void aimingUpdate(unsigned long currentTime);
+    void coordsUpdate();
 
-    return data;
-}
+protected:
+    IMU* _imu;
+    GNSSDriver* _gnss;
+
+    gnssData_s _gnssData;
+
+    unsigned long _lastUpdateAimingTime = 0;
+    unsigned long _lastUpdateGNSSTime = 0;
+};
+
+#endif

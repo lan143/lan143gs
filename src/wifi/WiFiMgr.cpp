@@ -1,4 +1,3 @@
-
 /**
  * MIT License
  *
@@ -23,27 +22,20 @@
  * SOFTWARE.
  */
 
-#include "Arduino.h"
-#include "QMC5883LDriver.h"
+#include "WiFiMgr.h"
+#include "../config/Config.h"
 
-QMC5883LDriver::QMC5883LDriver() {
-    _compass = new QMC5883L();
-}
+WiFiMgr* WiFiMgr::_instance = 0;
 
-void QMC5883LDriver::init() {
-    _compass->init();
-
-    Serial.print("QMC5883L: ");
-    Serial.println(_compass->ready() ? "OK" : "FAIL");
-
-    _config = new compassConfig_t();
-    _config->mag_declination = 0;
-}
-
-compassData_t QMC5883LDriver::getData() {
-    int16_t t;
-    compassData_t data;
-    _compass->readRaw(&data.x, &data.y, &data.z, &t);
-
-    return data;
+void WiFiMgr::init() {
+    if (GET_CONFIG->wifi.isAPMode) {
+        if (!_wifi->softAP(GET_CONFIG->wifi.apSSID, GET_CONFIG->wifi.apPassword)) {
+            strncpy(GET_CONFIG->wifi.apSSID, "lan143gs", sizeof(GET_CONFIG->wifi.apSSID));
+            strncpy(GET_CONFIG->wifi.apPassword, "1234567890", sizeof(GET_CONFIG->wifi.apPassword));
+            Config::getInstance()->save();
+            init();
+        }
+    } else {
+        _wifi->begin(GET_CONFIG->wifi.clientSSID, GET_CONFIG->wifi.clientPassword);
+    }
 }

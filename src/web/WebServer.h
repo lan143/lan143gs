@@ -1,4 +1,3 @@
-
 /**
  * MIT License
  *
@@ -23,27 +22,20 @@
  * SOFTWARE.
  */
 
-#include "Arduino.h"
-#include "QMC5883LDriver.h"
+#ifndef H_WEBSERVER_H
+#define H_WEBSERVER_H
 
-QMC5883LDriver::QMC5883LDriver() {
-    _compass = new QMC5883L();
-}
+#include <ESPAsyncTCP.h>
+#include <ESPAsyncWebServer.h>
 
-void QMC5883LDriver::init() {
-    _compass->init();
+class WebServer {
+public:
+    WebServer();
 
-    Serial.print("QMC5883L: ");
-    Serial.println(_compass->ready() ? "OK" : "FAIL");
+    void init();
 
-    _config = new compassConfig_t();
-    _config->mag_declination = 0;
-}
+protected:
+    AsyncWebServer* _server;
+};
 
-compassData_t QMC5883LDriver::getData() {
-    int16_t t;
-    compassData_t data;
-    _compass->readRaw(&data.x, &data.y, &data.z, &t);
-
-    return data;
-}
+#endif

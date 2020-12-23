@@ -1,4 +1,3 @@
-
 /**
  * MIT License
  *
@@ -24,26 +23,31 @@
  */
 
 #include "Arduino.h"
-#include "QMC5883LDriver.h"
+#include "Config.h"
 
-QMC5883LDriver::QMC5883LDriver() {
-    _compass = new QMC5883L();
+Config* Config::_instance = 0;
+
+void Config::init() {
+    _config = new Config_t();
+    _eeprom = new EEPROMClass();
+    _eeprom->begin(sizeof(Config_t));
+
+    uint8_t buffer[sizeof(Config_t)];
+
+    for (unsigned int i = 0; i < sizeof(Config_t); i++) {
+        buffer[i] = _eeprom->read(i);
+    }
+
+    memcpy(_config, buffer, sizeof(Config_t));
 }
 
-void QMC5883LDriver::init() {
-    _compass->init();
+void Config::save() {
+    uint8_t buffer[sizeof(*_config)];
+    memcpy(buffer, _config, sizeof(*_config));
 
-    Serial.print("QMC5883L: ");
-    Serial.println(_compass->ready() ? "OK" : "FAIL");
+    for (unsigned int i = 0; i < sizeof(buffer); i++) {
+        _eeprom->write(i, buffer[i]);
+    }
 
-    _config = new compassConfig_t();
-    _config->mag_declination = 0;
-}
-
-compassData_t QMC5883LDriver::getData() {
-    int16_t t;
-    compassData_t data;
-    _compass->readRaw(&data.x, &data.y, &data.z, &t);
-
-    return data;
+    _eeprom->commit();
 }

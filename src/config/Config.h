@@ -1,4 +1,3 @@
-
 /**
  * MIT License
  *
@@ -23,27 +22,58 @@
  * SOFTWARE.
  */
 
-#include "Arduino.h"
-#include "QMC5883LDriver.h"
+#ifndef H_CONFIG_H
+#define H_CONFIG_H
 
-QMC5883LDriver::QMC5883LDriver() {
-    _compass = new QMC5883L();
-}
+#include <EEPROM.h>
 
-void QMC5883LDriver::init() {
-    _compass->init();
+#define GET_CONFIG Config::getInstance()->getConfig()
 
-    Serial.print("QMC5883L: ");
-    Serial.println(_compass->ready() ? "OK" : "FAIL");
+typedef struct AccCal_s {
+    bool calibrated = false;
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
+} AccCal_t;
 
-    _config = new compassConfig_t();
-    _config->mag_declination = 0;
-}
+typedef struct WiFi_s {
+    bool isAPMode = true;
+    char apSSID[64];
+    char apPassword[64];
+    char clientSSID[64];
+    char clientPassword[64];
+} WiFi_t;
 
-compassData_t QMC5883LDriver::getData() {
-    int16_t t;
-    compassData_t data;
-    _compass->readRaw(&data.x, &data.y, &data.z, &t);
+typedef struct Config_s {
+    AccCal_t accZero;
+    WiFi_t wifi;
+} Config_t;
 
-    return data;
-}
+class Config {
+public:
+    static Config *getInstance() {
+        if (!_instance) {
+            _instance = new Config();
+        }
+
+        return _instance;
+    }
+
+    void init();
+    void save();
+
+    Config_t* getConfig() { return _config; }
+
+protected:
+    EEPROMClass *_eeprom;
+    Config_t *_config;
+
+private:
+    static Config *_instance;
+
+    Config() {}
+    Config(const Config &);
+    Config &operator=(Config &);
+};
+
+#endif

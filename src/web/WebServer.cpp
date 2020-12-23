@@ -22,35 +22,17 @@
  * SOFTWARE.
  */
 
-#ifndef H_NAVIGATION_SERVISE_H
-#define H_NAVIGATION_SERVISE_H
+#include "WebServer.h"
 
-#include "IMU.h"
-#include "../drivers/GNSSDriver.h"
-#include "../mapping.h"
+WebServer::WebServer() {
+    _server = new AsyncWebServer(80);
+}
 
-#define AIMING_LOOP_TIME 10 // 100 Hz
-#define GNNS_LOOP_TIME 100 // 10 Hz
+void WebServer::init() {
+    _server->begin();
 
-class NavigationService {
-public:
-    NavigationService();
-    void init();
-
-    void update();
-protected:
-
-    void aimingUpdate(unsigned long currentTime);
-    void coordsUpdate();
-
-protected:
-    IMU* _imu;
-    GNSSDriver* _gnss;
-
-    gnssData_s _gnssData;
-
-    unsigned long _lastUpdateAimingTime = 0;
-    unsigned long _lastUpdateGNSSTime = 0;
-};
-
-#endif
+    _server->on("/api", HTTP_GET, [](AsyncWebServerRequest *request) {
+        AsyncWebServerResponse *response = request->beginResponse(200, "application/json", "{\"version\": \"0.0.0\"}");
+        request->send(response);
+    });
+}

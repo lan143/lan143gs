@@ -1,4 +1,3 @@
-
 /**
  * MIT License
  *
@@ -23,27 +22,33 @@
  * SOFTWARE.
  */
 
-#include "Arduino.h"
-#include "QMC5883LDriver.h"
+#ifndef H_WIFI_MGR_H
+#define H_WIFI_MGR_H
 
-QMC5883LDriver::QMC5883LDriver() {
-    _compass = new QMC5883L();
-}
+#include <ESP8266WiFi.h>
 
-void QMC5883LDriver::init() {
-    _compass->init();
+class WiFiMgr {
+public:
+    static WiFiMgr *getInstance() {
+        if (!_instance) {
+            _instance = new WiFiMgr();
+        }
 
-    Serial.print("QMC5883L: ");
-    Serial.println(_compass->ready() ? "OK" : "FAIL");
+        return _instance;
+    }
 
-    _config = new compassConfig_t();
-    _config->mag_declination = 0;
-}
+    void init();
 
-compassData_t QMC5883LDriver::getData() {
-    int16_t t;
-    compassData_t data;
-    _compass->readRaw(&data.x, &data.y, &data.z, &t);
+protected:
+    WiFiMgr() {
+        _wifi = &WiFi;
+    }
+    WiFiMgr(const WiFiMgr &);
+    WiFiMgr &operator=(WiFiMgr &);
 
-    return data;
-}
+protected:
+    static WiFiMgr *_instance;
+    ESP8266WiFiClass* _wifi;
+};
+
+#endif

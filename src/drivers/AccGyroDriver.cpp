@@ -26,18 +26,24 @@
 #include "AccGyroDriver.h"
 #include "../common/vector.h"
 #include "../common/calibration.h"
+#include "../config/Config.h"
 
 void AccGyroDriver::init() {
     driverInit();
+    uint16_t accLpfCutHz = 10;
+    uint32_t accSampleTimeUs = 1e6 / 100;
 
     for (int axis = 0; axis < 3; axis++) {
-        uint16_t accLpfCutHz = 5;
-        uint32_t accSampleTimeUs = 1e3 / 5;
-
         _accFilter[axis].init(accLpfCutHz, accSampleTimeUs, BIQUAD_Q, FILTER_LPF);
     }
 
-    Serial.println("Start gyro calibration");
+    if (GET_CONFIG->accZero.calibrated) {
+        accZero[X] = GET_CONFIG->accZero.x;
+        accZero[Y] = GET_CONFIG->accZero.y;
+        accZero[Z] = GET_CONFIG->accZero.z;
+        accCalibrationState = STATE_COMPLETE;
+    }
+
     zeroCalibrationStartV(&gyroCalibration, CALIBRATING_GYRO_TIME_MS, 32, false);
 }
 
@@ -50,9 +56,9 @@ imuData_t AccGyroDriver::getData() {
 }
 
 void AccGyroDriver::updateAccData() {
-    /*for (int axis = 0; axis < 3; axis++) {
+    for (int axis = 0; axis < 3; axis++) {
         accADCRaw[axis] = _accFilter[axis].applyFilter(accADCRaw[axis]);
-    }*/
+    }
 
     if (accCalibrationState != STATE_COMPLETE) {
         performAccCalibration();
@@ -75,6 +81,16 @@ void AccGyroDriver::updateAccData() {
     }
 }
 
+void AccGyroDriver::startAccCalibration() {
+    GET_CONFIG->accZero.x = 0.0f;
+    GET_CONFIG->accZero.y = 0.0f;
+    GET_CONFIG->accZero.z = 0.0f;
+    GET_CONFIG->accZero.calibrated = false;
+    Config::getInstance()->save();
+
+    accCalibrationState = STATE_NOT_STARTED;
+}
+
 void AccGyroDriver::performAccCalibration() {
     for (int axis = 0; axis < 3; axis++) {
         // Reset a[axis] at start of calibration
@@ -94,8 +110,14 @@ void AccGyroDriver::performAccCalibration() {
         accZero[X] = (_a[X] + (CALIBRATING_ACC_CYCLES / 2)) / CALIBRATING_ACC_CYCLES;
         accZero[Y] = (_a[Y] + (CALIBRATING_ACC_CYCLES / 2)) / CALIBRATING_ACC_CYCLES;
         accZero[Z] = (_a[Z] + (CALIBRATING_ACC_CYCLES / 2)) / CALIBRATING_ACC_CYCLES - accScale;
+
+        GET_CONFIG->accZero.x = accZero[X];
+        GET_CONFIG->accZero.y = accZero[Y];
+        GET_CONFIG->accZero.z = accZero[Z];
+        GET_CONFIG->accZero.calibrated = true;
+        Config::getInstance()->save();
+
         accCalibrationState = STATE_COMPLETE;
-        Serial.println("Acc calibration complete");
     }
 
     accCalibrationCycles--;

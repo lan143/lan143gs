@@ -23,23 +23,23 @@
  */
 
 #include "Arduino.h"
-#include "NavigationService.h"
+#include "Navigation.h"
 #include "../factories/GNSSDriverFactory.h"
 
-NavigationService::NavigationService() {
+Navigation::Navigation() {
     _imu = new IMU();
     _gnss = GNSSDriverFactory::build();
 }
 
-void NavigationService::init() {
+void Navigation::init() {
     _imu->init();
     _gnss->init();
 }
 
-void NavigationService::aimingUpdate(unsigned long currentTime) {
+void Navigation::aimingUpdate(unsigned long currentTime) {
     // 1. Get current Euler angles
     attitudeEulerAngles_t attitudeData = _imu->getAttitudeData(currentTime);
-    Serial.print("Roll: ");
+    /*Serial.print("Roll: ");
     Serial.print(attitudeData.values.roll);
     Serial.print("\t");
 
@@ -49,17 +49,17 @@ void NavigationService::aimingUpdate(unsigned long currentTime) {
 
     Serial.print("Yaw: ");
     Serial.print(attitudeData.values.yaw);
-    Serial.println();
+    Serial.println();*/
     // 2. Calculate setpoint for yaw and pitch axis
     // 3. Run PID regulator for yaw and pitch axis
     // 4. Execute PID sum in servos
 }
 
-void NavigationService::coordsUpdate() {
+void Navigation::coordsUpdate() {
     _gnssData = _gnss->getData();
 }
 
-void NavigationService::update() {
+void Navigation::update() {
     if ((millis() - this->_lastUpdateAimingTime >= AIMING_LOOP_TIME) || this->_lastUpdateAimingTime == 0) {
         this->aimingUpdate(millis());
         this->_lastUpdateAimingTime = millis();
