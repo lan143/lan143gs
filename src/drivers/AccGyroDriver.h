@@ -33,12 +33,6 @@
 #define ACC_CLIPPING_THRESHOLD_G            7.9f
 #define CALIBRATING_ACC_CYCLES              400
 
-enum AccCalibrationState {
-    STATE_NOT_STARTED = 0,
-    STATE_IN_PROGRESS = 1,
-    STATE_COMPLETE = 2,
-};
-
 typedef struct imuData_s {
     float accX;
     float accY;
@@ -55,7 +49,7 @@ public:
     imuData_t getData();
 
     void startAccCalibration();
-    AccCalibrationState getAccCalibrationState() { return accCalibrationState; }
+    zeroCalibrationState_e getAccCalibrationState() { return accCalibrationState; }
 protected:
     virtual void driverInit();
     virtual void updateData();
@@ -79,7 +73,7 @@ protected:
 
     BiquadFilter _accFilter[XYZ_AXIS_COUNT];
 
-    AccCalibrationState accCalibrationState = STATE_NOT_STARTED;
+    zeroCalibrationState_e accCalibrationState = ZERO_CALIBRATION_NONE;
     uint32_t accCalibrationCycles = CALIBRATING_ACC_CYCLES;
     int64_t _a[XYZ_AXIS_COUNT];
 

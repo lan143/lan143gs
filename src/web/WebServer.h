@@ -35,6 +35,13 @@ public:
     void init();
 
 protected:
+    void version(AsyncWebServerRequest *request);
+    void startCalibrateAcc(AsyncWebServerRequest *request);
+    void calibrateAccStatus(AsyncWebServerRequest *request);
+    void startCalibrateCompass(AsyncWebServerRequest *request);
+    void calibrateCompassStatus(AsyncWebServerRequest *request);
+
+protected:
     AsyncWebServer* _server;
 };
 

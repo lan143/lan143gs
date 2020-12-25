@@ -26,6 +26,8 @@
 #include "Navigation.h"
 #include "../factories/GNSSDriverFactory.h"
 
+Navigation* Navigation::_instance = 0;
+
 Navigation::Navigation() {
     _imu = new IMU();
     _gnss = GNSSDriverFactory::build();

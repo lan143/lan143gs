@@ -22,7 +22,10 @@
  * SOFTWARE.
  */
 
+#include <AsyncJson.h>
+#include <ArduinoJson.h>
 #include "WebServer.h"
+#include "../navigation/Navigation.h"
 
 WebServer::WebServer() {
     _server = new AsyncWebServer(80);
@@ -30,9 +33,48 @@ WebServer::WebServer() {
 
 void WebServer::init() {
     _server->begin();
+    _server->on("/api/", HTTP_GET, [this](AsyncWebServerRequest *request) { version(request); });
+    _server->on("/api/calibrate/acc", HTTP_GET, [this](AsyncWebServerRequest *request) { calibrateAccStatus(request); });
+    _server->on("/api/calibrate/acc", HTTP_POST, [this](AsyncWebServerRequest *request) { startCalibrateAcc(request); });
+    _server->on("/api/calibrate/compass", HTTP_GET, [this](AsyncWebServerRequest *request) { calibrateCompassStatus(request); });
+    _server->on("/api/calibrate/compass", HTTP_POST, [this](AsyncWebServerRequest *request) { startCalibrateCompass(request); });
+}
 
-    _server->on("/api", HTTP_GET, [](AsyncWebServerRequest *request) {
-        AsyncWebServerResponse *response = request->beginResponse(200, "application/json", "{\"version\": \"0.0.0\"}");
-        request->send(response);
-    });
+void WebServer::version(AsyncWebServerRequest *request) {
+    AsyncResponseStream *response = request->beginResponseStream("application/json");
+    DynamicJsonDocument jd(50);
+    jd["version"] = "0.0.0";
+    serializeJson(jd, *response);
+    request->send(response);
+}
+
+void WebServer::startCalibrateAcc(AsyncWebServerRequest *request) {
+    Navigation::getInstance()->startAccCalibration();
+
+    AsyncWebServerResponse *response = request->beginResponse(201, "application/json");
+    request->send(response);
+}
+
+void WebServer::calibrateAccStatus(AsyncWebServerRequest *request) {
+    auto state = Navigation::getInstance()->getAccCalibrationState();
+
+    AsyncResponseStream *response = request->beginResponseStream("application/json");
+    DynamicJsonDocument jd(50);
+    jd["state"] = state;
+    serializeJson(jd, *response);
+    request->send(response);
+}
+
+void WebServer::startCalibrateCompass(AsyncWebServerRequest *request) {
+    Navigation::getInstance()->startCompassCalibration();
+}
+
+void WebServer::calibrateCompassStatus(AsyncWebServerRequest *request) {
+    auto state = Navigation::getInstance()->getCompassCalibrationState();
+
+    AsyncResponseStream *response = request->beginResponseStream("application/json");
+    DynamicJsonDocument jd(50);
+    jd["state"] = state;
+    serializeJson(jd, *response);
+    request->send(response);
 }

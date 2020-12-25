@@ -41,7 +41,7 @@ void AccGyroDriver::init() {
         accZero[X] = GET_CONFIG->accZero.x;
         accZero[Y] = GET_CONFIG->accZero.y;
         accZero[Z] = GET_CONFIG->accZero.z;
-        accCalibrationState = STATE_COMPLETE;
+        accCalibrationState = ZERO_CALIBRATION_DONE;
     }
 
     zeroCalibrationStartV(&gyroCalibration, CALIBRATING_GYRO_TIME_MS, 32, false);
@@ -60,7 +60,7 @@ void AccGyroDriver::updateAccData() {
         accADCRaw[axis] = _accFilter[axis].applyFilter(accADCRaw[axis]);
     }
 
-    if (accCalibrationState != STATE_COMPLETE) {
+    if (accCalibrationState != ZERO_CALIBRATION_DONE) {
         performAccCalibration();
     }
 
@@ -88,15 +88,15 @@ void AccGyroDriver::startAccCalibration() {
     GET_CONFIG->accZero.calibrated = false;
     Config::getInstance()->save();
 
-    accCalibrationState = STATE_NOT_STARTED;
+    accCalibrationState = ZERO_CALIBRATION_NONE;
 }
 
 void AccGyroDriver::performAccCalibration() {
     for (int axis = 0; axis < 3; axis++) {
         // Reset a[axis] at start of calibration
-        if (accCalibrationState == STATE_NOT_STARTED) {
+        if (accCalibrationState == ZERO_CALIBRATION_NONE) {
             _a[axis] = 0;
-            accCalibrationState = STATE_IN_PROGRESS;
+            accCalibrationState = ZERO_CALIBRATION_IN_PROGRESS;
         }
 
         // Sum up CALIBRATING_ACC_CYCLES readings
@@ -117,7 +117,7 @@ void AccGyroDriver::performAccCalibration() {
         GET_CONFIG->accZero.calibrated = true;
         Config::getInstance()->save();
 
-        accCalibrationState = STATE_COMPLETE;
+        accCalibrationState = ZERO_CALIBRATION_DONE;
     }
 
     accCalibrationCycles--;

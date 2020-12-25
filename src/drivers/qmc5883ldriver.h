@@ -32,11 +32,10 @@ class QMC5883LDriver : public CompassDriver {
 public:
     QMC5883LDriver();
 
-    void init();
+    void driverInit();
     bool isReady() { return _compass->ready() > 0; }
-    bool isCalibated() { return _compass->readHeading() > 0; }
 
-    compassData_t getData();
+    void update();
 
 protected:
     QMC5883L* _compass;

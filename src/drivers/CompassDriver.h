@@ -26,6 +26,11 @@
 #define H_COMPASS_H
 
 #include "Arduino.h"
+#include "../common/maths.h"
+#include "../common/calibration.h"
+#include "../common/axis.h"
+
+#define COMPASS_CALIBRATION_TIME 30000
 
 typedef struct compassData_s {
     int16_t x;
@@ -40,17 +45,35 @@ typedef struct compassConfig_s {
 
 class CompassDriver {
 public:
-    virtual void init();
+    void init();
+    virtual void driverInit();
     compassConfig_t* getConfig()
     {
         return _config;
     }
     virtual bool isReady();
-    virtual bool isCalibated();
+    bool isCalibated() { return _calibrationState == ZERO_CALIBRATION_DONE; }
 
-    virtual compassData_t getData();
+    void startCalibration();
+    zeroCalibrationState_e getCalibrationState() { return _calibrationState; }
+
+    compassData_t getData();
+
+protected:
+    virtual void update();
+
+    void performCalibration();
+
 protected:
     compassConfig_t* _config;
+
+    zeroCalibrationState_e _calibrationState;
+    int32_t _zeros[XYZ_AXIS_COUNT];
+    timeMs_t _calStartedAt;
+    int32_t _magPrev[XYZ_AXIS_COUNT];
+    sensorCalibrationState_t _calState;
+
+    int32_t _magADCRaw[XYZ_AXIS_COUNT];
 };
 
 #endif

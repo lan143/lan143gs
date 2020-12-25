@@ -6,7 +6,6 @@
 #include "wifi/WiFiMgr.h"
 #include "web/WebServer.h"
 
-Navigation navigation;
 WebServer webServer;
 
 void initI2C() {
@@ -25,9 +24,9 @@ void setup() {
   WiFiMgr::getInstance()->init();
   webServer.init();
   initI2C();
-  navigation.init();
+  Navigation::getInstance()->init();
 }
 
 void loop() {
-  navigation.update();
+  Navigation::getInstance()->update();
 }

@@ -30,7 +30,7 @@ QMC5883LDriver::QMC5883LDriver() {
     _compass = new QMC5883L();
 }
 
-void QMC5883LDriver::init() {
+void QMC5883LDriver::driverInit() {
     _compass->init();
 
     Serial.print("QMC5883L: ");
@@ -40,10 +40,12 @@ void QMC5883LDriver::init() {
     _config->mag_declination = 0;
 }
 
-compassData_t QMC5883LDriver::getData() {
+void QMC5883LDriver::update() {
     int16_t t;
-    compassData_t data;
-    _compass->readRaw(&data.x, &data.y, &data.z, &t);
+    int16_t data[XYZ_AXIS_COUNT];
+    _compass->readRaw(&data[X], &data[Y], &data[Z], &t);
 
-    return data;
+    for (uint8_t axis = X; axis < XYZ_AXIS_COUNT; axis++) {
+        _magADCRaw[axis] = data[axis];
+    }
 }

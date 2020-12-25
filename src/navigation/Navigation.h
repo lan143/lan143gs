@@ -34,10 +34,22 @@
 
 class Navigation {
 public:
-    Navigation();
-    void init();
+    static Navigation *getInstance() {
+        if (!_instance) {
+            _instance = new Navigation();
+        }
 
+        return _instance;
+    }
+
+    void init();
     void update();
+
+    void startAccCalibration() { _imu->startAccCalibration(); }
+    void startCompassCalibration() { _imu->startCompassCalibration(); }
+    zeroCalibrationState_e getAccCalibrationState() { return _imu->getAccCalibrationState(); }
+    zeroCalibrationState_e getCompassCalibrationState() { return _imu->getCompassCalibration(); }
+
 protected:
 
     void aimingUpdate(unsigned long currentTime);
@@ -51,6 +63,12 @@ protected:
 
     unsigned long _lastUpdateAimingTime = 0;
     unsigned long _lastUpdateGNSSTime = 0;
+private:
+    static Navigation *_instance;
+
+    Navigation();
+    Navigation(const Navigation &);
+    Navigation &operator=(Navigation &);
 };
 
 #endif

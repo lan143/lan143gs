@@ -54,6 +54,12 @@ public:
 
     attitudeEulerAngles_t getAttitudeData(unsigned long currentTime);
 
+    void startAccCalibration() { _accGyro->startAccCalibration(); }
+    void startCompassCalibration() { _compass->startCalibration(); }
+
+    zeroCalibrationState_e getAccCalibrationState() { return _accGyro->getAccCalibrationState(); }
+    zeroCalibrationState_e getCompassCalibration() { return _compass->getCalibrationState(); }
+
 protected:
     void mahonyAHRSupdate(
         float dt,

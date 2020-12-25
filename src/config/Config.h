@@ -36,6 +36,13 @@ typedef struct AccCal_s {
     float z = 0.0f;
 } AccCal_t;
 
+typedef struct CompassCal_s {
+    bool calibrated = false;
+    int32_t x = 0;
+    int32_t y = 0;
+    int32_t z = 0;
+} CompassCal_t;
+
 typedef struct WiFi_s {
     bool isAPMode = true;
     char apSSID[64];
@@ -47,6 +54,7 @@ typedef struct WiFi_s {
 typedef struct Config_s {
     AccCal_t accZero;
     WiFi_t wifi;
+    CompassCal_t compassZero;
 } Config_t;
 
 class Config {
