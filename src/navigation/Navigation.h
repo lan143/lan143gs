@@ -30,7 +30,7 @@
 #include "../mapping.h"
 
 #define AIMING_LOOP_TIME 10 // 100 Hz
-#define GNNS_LOOP_TIME 100 // 10 Hz
+#define GNNS_LOOP_TIME 10 // 10 Hz
 
 class Navigation {
 public:

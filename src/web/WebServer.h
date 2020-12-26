@@ -25,7 +25,6 @@
 #ifndef H_WEBSERVER_H
 #define H_WEBSERVER_H
 
-#include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 
 class WebServer {

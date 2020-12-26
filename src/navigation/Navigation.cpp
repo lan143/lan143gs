@@ -59,6 +59,27 @@ void Navigation::aimingUpdate(unsigned long currentTime) {
 
 void Navigation::coordsUpdate() {
     _gnssData = _gnss->getData();
+
+
+    Serial.print("GPS Ok: ");
+    Serial.print(_gnssData.ok ? "true" : "false");
+    Serial.print("\t");
+
+    Serial.print("Sats: ");
+    Serial.print(_gnssData.sats);
+    Serial.print("\t");
+    
+    Serial.print("Lat: ");
+    Serial.print(_gnssData.lat);
+    Serial.print("\t");
+    
+    Serial.print("Lng: ");
+    Serial.print(_gnssData.lng);
+    Serial.print("\t");
+    
+    Serial.print("Altitude: ");
+    Serial.print(_gnssData.height);
+    Serial.println();
 }
 
 void Navigation::update() {

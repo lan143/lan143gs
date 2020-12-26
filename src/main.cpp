@@ -18,13 +18,17 @@ void initSerial() {
   while (!Serial) {}
 }
 
-void setup() {
-  initSerial();
+void initServices() {
   Config::getInstance()->init();
   WiFiMgr::getInstance()->init();
   webServer.init();
-  initI2C();
   Navigation::getInstance()->init();
+}
+
+void setup() {
+  initSerial();
+  initI2C();
+  initServices();
 }
 
 void loop() {

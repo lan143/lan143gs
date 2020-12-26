@@ -25,7 +25,7 @@
 #ifndef H_WIFI_MGR_H
 #define H_WIFI_MGR_H
 
-#include <ESP8266WiFi.h>
+#include <WiFi.h>
 
 class WiFiMgr {
 public:
@@ -48,7 +48,7 @@ protected:
 
 protected:
     static WiFiMgr *_instance;
-    ESP8266WiFiClass* _wifi;
+    WiFiClass* _wifi;
 };
 
 #endif

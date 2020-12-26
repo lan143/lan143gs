@@ -26,9 +26,11 @@
 #define H_GNSS_H
 
 typedef struct gnssData_s {
-    float lat;
-    float lng;
-    float height;
+    bool ok = false;
+    float lat = 0;
+    float lng = 0;
+    int32_t height = 0;
+    uint8_t sats = 0;
 } gnssData_t;
 
 class GNSSDriver {

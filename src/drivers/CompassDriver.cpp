@@ -27,6 +27,8 @@
 #include "../common/maths.h"
 
 void CompassDriver::init() {
+    driverInit();
+
     if (GET_CONFIG->compassZero.calibrated) {
         _zeros[X] = GET_CONFIG->compassZero.x;
         _zeros[Y] = GET_CONFIG->compassZero.y;

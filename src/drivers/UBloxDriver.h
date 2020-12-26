@@ -25,7 +25,8 @@
 #ifndef H_M8Q_DRIVER_H
 #define H_M8Q_DRIVER_H
 
-#include <SoftwareSerial.h>
+#include <Arduino.h>
+#include <SparkFun_Ublox_Arduino_Library.h>
 #include "GNSSDriver.h"
 
 class UBloxDriver : public GNSSDriver {
@@ -35,7 +36,10 @@ public:
     gnssData_t getData();
 
 protected:
-    SoftwareSerial* _serial;
+    HardwareSerial* _serial;
+    SFE_UBLOX_GPS* _gps;
+    uint8_t currentBaudRateIndex = 0;
+    uint8_t tryesCount = 0;
 };
 
 #endif

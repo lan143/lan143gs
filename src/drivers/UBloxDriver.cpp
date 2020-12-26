@@ -26,15 +26,31 @@
 #include "mapping.h"
 
 UBloxDriver::UBloxDriver() {
-    _serial = new SoftwareSerial(GNSS_RX, GNSS_TX);
+    _serial = &Serial2;
+    _serial->begin(9800);
+    _gps = new SFE_UBLOX_GPS();
 }
 
 void UBloxDriver::init() {
-    _serial->begin(4800);
+    if (_gps->begin(*_serial)) {
+        Serial.println("UBloxDriver inited");
+    } else {
+        Serial.println("Failed to init UBloxDriver");
+    }
 }
 
 gnssData_t UBloxDriver::getData() {
-    if (_serial->available()) {
-        int8_t byte = _serial->read();
+    gnssData_t data;
+
+    if (_gps->isConnected()) {
+        data.ok = true;
+        data.lat = (float)_gps->getLatitude() / pow(10, 7);
+        data.lng = (float)_gps->getLongitude() / pow(10, 7);
+        data.height = _gps->getAltitudeMSL() / 10;
+        data.sats = _gps->getSIV();
+    } else {
+        data.ok = false;
     }
+
+    return data;
 }

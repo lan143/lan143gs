@@ -6,14 +6,12 @@
 
 #define COMPASS_TYPE_QMC5883L
 
-#define GNSS_TYPE_FAKE
-#define GNSS_TX 16
-#define GNSS_RX 13
+#define GNSS_TYPE_UNLOX
 
-#define I2C_SDA 14
-#define I2C_SCL 12
+#define I2C_SDA 22
+#define I2C_SCL 23
 
-#define SERVO_HEADING 4
-#define SERVO_ANGLE 5
+#define SERVO_HEADING 18
+#define SERVO_ANGLE 19
 
 #endif
