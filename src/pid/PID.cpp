@@ -22,26 +22,16 @@
  * SOFTWARE.
  */
 
-#ifndef H_WEBSERVER_H
-#define H_WEBSERVER_H
+#include <Arduino.h>
+#include "PID.h"
 
-#include <ESPAsyncWebServer.h>
+int computePID(float input, float setpoint, float kp, float ki, float kd, float dt) {
+  float err = setpoint - input;
+  static float integral = 0, prevErr = 0;
 
-class WebServer {
-public:
-    WebServer();
+  integral = integral + (float)err * dt * ki;
+  float D = (err - prevErr) / dt;
+  prevErr = err;
 
-    void init();
-
-protected:
-    void version(AsyncWebServerRequest *request);
-    void startCalibrateAcc(AsyncWebServerRequest *request);
-    void calibrateAccStatus(AsyncWebServerRequest *request);
-    void startCalibrateCompass(AsyncWebServerRequest *request);
-    void calibrateCompassStatus(AsyncWebServerRequest *request);
-
-protected:
-    AsyncWebServer* _server;
-};
-
-#endif
+  return err * kp + integral + D * kd;
+}

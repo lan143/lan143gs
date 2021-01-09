@@ -22,26 +22,19 @@
  * SOFTWARE.
  */
 
-#ifndef H_WEBSERVER_H
-#define H_WEBSERVER_H
+#ifndef H_TRACKER_SERVO_H
+#define H_TRACKER_SERVO_H
 
-#include <ESPAsyncWebServer.h>
+#include <ESP32_Servo.h>
 
-class WebServer {
+class TrackerServo {
 public:
-    WebServer();
-
-    void init();
-
-protected:
-    void version(AsyncWebServerRequest *request);
-    void startCalibrateAcc(AsyncWebServerRequest *request);
-    void calibrateAccStatus(AsyncWebServerRequest *request);
-    void startCalibrateCompass(AsyncWebServerRequest *request);
-    void calibrateCompassStatus(AsyncWebServerRequest *request);
+    TrackerServo(int pin);
+    void update(int influence);
 
 protected:
-    AsyncWebServer* _server;
+    Servo* _servo;
+    int _prev;
 };
 
 #endif

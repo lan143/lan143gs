@@ -22,26 +22,56 @@
  * SOFTWARE.
  */
 
-#ifndef H_WEBSERVER_H
-#define H_WEBSERVER_H
+#include "alignment.h"
 
-#include <ESPAsyncWebServer.h>
+void applySensorAlignment(int32_t * dest, int32_t * src, SensorAlign_e rotation)
+{
+    // Create a copy so we could use the same buffer for src & dest
+    const int32_t x = src[X];
+    const int32_t y = src[Y];
+    const int32_t z = src[Z];
 
-class WebServer {
-public:
-    WebServer();
-
-    void init();
-
-protected:
-    void version(AsyncWebServerRequest *request);
-    void startCalibrateAcc(AsyncWebServerRequest *request);
-    void calibrateAccStatus(AsyncWebServerRequest *request);
-    void startCalibrateCompass(AsyncWebServerRequest *request);
-    void calibrateCompassStatus(AsyncWebServerRequest *request);
-
-protected:
-    AsyncWebServer* _server;
-};
-
-#endif
+    switch (rotation) {
+    default:
+    case CW0_DEG:
+        dest[X] = x;
+        dest[Y] = y;
+        dest[Z] = z;
+        break;
+    case CW90_DEG:
+        dest[X] = y;
+        dest[Y] = -x;
+        dest[Z] = z;
+        break;
+    case CW180_DEG:
+        dest[X] = -x;
+        dest[Y] = -y;
+        dest[Z] = z;
+        break;
+    case CW270_DEG:
+        dest[X] = -y;
+        dest[Y] = x;
+        dest[Z] = z;
+        break;
+    case CW0_DEG_FLIP:
+        dest[X] = -x;
+        dest[Y] = y;
+        dest[Z] = -z;
+        break;
+    case CW90_DEG_FLIP:
+        dest[X] = y;
+        dest[Y] = x;
+        dest[Z] = -z;
+        break;
+    case CW180_DEG_FLIP:
+        dest[X] = x;
+        dest[Y] = -y;
+        dest[Z] = -z;
+        break;
+    case CW270_DEG_FLIP:
+        dest[X] = -y;
+        dest[Y] = -x;
+        dest[Z] = -z;
+        break;
+    }
+}

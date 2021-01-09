@@ -22,26 +22,24 @@
  * SOFTWARE.
  */
 
-#ifndef H_WEBSERVER_H
-#define H_WEBSERVER_H
+#ifndef H_ALIGNMENT_H
+#define H_ALIGNMENT_H
 
-#include <ESPAsyncWebServer.h>
+#include "Arduino.h"
+#include "../common/axis.h"
 
-class WebServer {
-public:
-    WebServer();
+typedef enum {
+    ALIGN_DEFAULT = 0,
+    CW0_DEG = 1,
+    CW90_DEG = 2,
+    CW180_DEG = 3,
+    CW270_DEG = 4,
+    CW0_DEG_FLIP = 5,
+    CW90_DEG_FLIP = 6,
+    CW180_DEG_FLIP = 7,
+    CW270_DEG_FLIP = 8
+} SensorAlign_e;
 
-    void init();
-
-protected:
-    void version(AsyncWebServerRequest *request);
-    void startCalibrateAcc(AsyncWebServerRequest *request);
-    void calibrateAccStatus(AsyncWebServerRequest *request);
-    void startCalibrateCompass(AsyncWebServerRequest *request);
-    void calibrateCompassStatus(AsyncWebServerRequest *request);
-
-protected:
-    AsyncWebServer* _server;
-};
+extern void applySensorAlignment(int32_t * dest, int32_t * src, SensorAlign_e rotation);
 
 #endif

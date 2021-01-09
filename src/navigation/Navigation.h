@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2020 Kravchenko Artyom
+ * Copyright (c) 2021 Kravchenko Artyom
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,12 +25,14 @@
 #ifndef H_NAVIGATION_SERVISE_H
 #define H_NAVIGATION_SERVISE_H
 
+#include <Arduino.h>
 #include "IMU.h"
 #include "../drivers/GNSSDriver.h"
 #include "../mapping.h"
+#include "../servos/TrackerServo.h"
 
 #define AIMING_LOOP_TIME 10 // 100 Hz
-#define GNNS_LOOP_TIME 10 // 10 Hz
+#define GNNS_LOOP_TIME 1000 // 1 Hz
 
 class Navigation {
 public:
@@ -61,8 +63,11 @@ protected:
 
     gnssData_s _gnssData;
 
+    TrackerServo* _servoAngle;
+
     unsigned long _lastUpdateAimingTime = 0;
     unsigned long _lastUpdateGNSSTime = 0;
+    unsigned long _previousAimingUpdateTime = 0;
 private:
     static Navigation *_instance;
 

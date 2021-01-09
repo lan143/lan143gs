@@ -11,7 +11,7 @@
 #define I2C_SDA 22
 #define I2C_SCL 23
 
-#define SERVO_HEADING 18
-#define SERVO_ANGLE 19
+#define SERVO_HEADING 19
+#define SERVO_ANGLE 18
 
 #endif

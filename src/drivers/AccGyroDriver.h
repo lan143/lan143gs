@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2020 Kravchenko Artyom
+ * Copyright (c) 2021 Kravchenko Artyom
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -68,8 +68,8 @@ protected:
 
     imuData_t data;
 
-    int16_t gyroADCRaw[XYZ_AXIS_COUNT];
-    int16_t accADCRaw[XYZ_AXIS_COUNT];
+    int32_t gyroADCRaw[XYZ_AXIS_COUNT];
+    int32_t accADCRaw[XYZ_AXIS_COUNT];
 
     BiquadFilter _accFilter[XYZ_AXIS_COUNT];
 

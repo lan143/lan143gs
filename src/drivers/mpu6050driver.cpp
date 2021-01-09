@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2020 Kravchenko Artyom
+ * Copyright (c) 2021 Kravchenko Artyom
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -49,5 +49,14 @@ void MPU6050Driver::driverInit() {
 }
 
 void MPU6050Driver::updateData() {
-    _mpu->getMotion6(&accADCRaw[0], &accADCRaw[1], &accADCRaw[2], &gyroADCRaw[0], &gyroADCRaw[1], &gyroADCRaw[2]);
+    int16_t accX, accY, accZ, gyroX, gyroY, gyroZ;
+    _mpu->getMotion6(&accX, &accY, &accZ, &gyroX, &gyroY, &gyroZ);
+
+    accADCRaw[X] = accX;
+    accADCRaw[Y] = accY;
+    accADCRaw[Z] = accZ;
+
+    gyroADCRaw[X] = gyroX;
+    gyroADCRaw[Y] = gyroY;
+    gyroADCRaw[Z] = gyroZ;
 }

@@ -22,26 +22,21 @@
  * SOFTWARE.
  */
 
-#ifndef H_WEBSERVER_H
-#define H_WEBSERVER_H
+#include "MavlinkTCPServer.h"
 
-#include <ESPAsyncWebServer.h>
+MavlinkTCPServer* MavlinkTCPServer::_instance = 0;
 
-class WebServer {
-public:
-    WebServer();
+MavlinkTCPServer::MavlinkTCPServer() {
+    _server = new AsyncServer(IPAddress(0, 0, 0, 0), 8888);
+}
 
-    void init();
+void MavlinkTCPServer::init() {
+    _server->begin();
+    
+    /*_server->onClient([this](void *s, AsyncClient* c){
+        if (c == NULL) {
+            return;
+        }
+    });*/
+}
 
-protected:
-    void version(AsyncWebServerRequest *request);
-    void startCalibrateAcc(AsyncWebServerRequest *request);
-    void calibrateAccStatus(AsyncWebServerRequest *request);
-    void startCalibrateCompass(AsyncWebServerRequest *request);
-    void calibrateCompassStatus(AsyncWebServerRequest *request);
-
-protected:
-    AsyncWebServer* _server;
-};
-
-#endif

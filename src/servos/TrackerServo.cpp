@@ -22,26 +22,26 @@
  * SOFTWARE.
  */
 
-#ifndef H_WEBSERVER_H
-#define H_WEBSERVER_H
+#include "TrackerServo.h"
 
-#include <ESPAsyncWebServer.h>
+TrackerServo::TrackerServo(int pin) {
+    _servo = new Servo();
+    _servo->attach(pin);
+    _servo->writeMicroseconds(1200);
+    _prev = 1500;
+}
 
-class WebServer {
-public:
-    WebServer();
+void TrackerServo::update(int influence) {
+    int newVal = _prev + influence;
 
-    void init();
+    if (newVal > 2000) {
+        newVal = 2000;
+    }
 
-protected:
-    void version(AsyncWebServerRequest *request);
-    void startCalibrateAcc(AsyncWebServerRequest *request);
-    void calibrateAccStatus(AsyncWebServerRequest *request);
-    void startCalibrateCompass(AsyncWebServerRequest *request);
-    void calibrateCompassStatus(AsyncWebServerRequest *request);
+    if (newVal < 1000) {
+        newVal = 1000;
+    }
 
-protected:
-    AsyncWebServer* _server;
-};
-
-#endif
+    _servo->writeMicroseconds(newVal);
+    _prev = newVal;
+}

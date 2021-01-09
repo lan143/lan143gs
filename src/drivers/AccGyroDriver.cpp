@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2020 Kravchenko Artyom
+ * Copyright (c) 2021 Kravchenko Artyom
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -68,6 +68,8 @@ void AccGyroDriver::updateAccData() {
         accADCRaw[axis] -= accZero[axis];
     }
 
+    applySensorAlignment(accADCRaw, accADCRaw, GET_CONFIG->accZero.alignment);
+
     data.accX = (float)accADCRaw[X] / accScale;
     data.accY = (float)accADCRaw[Y] / accScale;
     data.accZ = (float)accADCRaw[Z] / accScale;
@@ -131,6 +133,8 @@ void AccGyroDriver::updateGyroData() {
         gyroADCtmp[X] = (int32_t)gyroADCRaw[X] - (int32_t)gyroZero[X];
         gyroADCtmp[Y] = (int32_t)gyroADCRaw[Y] - (int32_t)gyroZero[Y];
         gyroADCtmp[Z] = (int32_t)gyroADCRaw[Z] - (int32_t)gyroZero[Z];
+
+        applySensorAlignment(gyroADCtmp, gyroADCtmp, GET_CONFIG->accZero.alignment);
 
         data.gyroX = (float)gyroADCtmp[X] * gyroScale;
         data.gyroY = (float)gyroADCtmp[Y] * gyroScale;

@@ -22,26 +22,9 @@
  * SOFTWARE.
  */
 
-#ifndef H_WEBSERVER_H
-#define H_WEBSERVER_H
+#ifndef H_PID_H
+#define H_PID_H
 
-#include <ESPAsyncWebServer.h>
-
-class WebServer {
-public:
-    WebServer();
-
-    void init();
-
-protected:
-    void version(AsyncWebServerRequest *request);
-    void startCalibrateAcc(AsyncWebServerRequest *request);
-    void calibrateAccStatus(AsyncWebServerRequest *request);
-    void startCalibrateCompass(AsyncWebServerRequest *request);
-    void calibrateCompassStatus(AsyncWebServerRequest *request);
-
-protected:
-    AsyncWebServer* _server;
-};
+extern int computePID(float input, float setpoint, float kp, float ki, float kd, float dt);
 
 #endif

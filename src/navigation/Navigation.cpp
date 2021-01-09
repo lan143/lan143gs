@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2020 Kravchenko Artyom
+ * Copyright (c) 2021 Kravchenko Artyom
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,12 +25,14 @@
 #include "Arduino.h"
 #include "Navigation.h"
 #include "../factories/GNSSDriverFactory.h"
+#include "../pid/PID.h"
 
 Navigation* Navigation::_instance = 0;
 
 Navigation::Navigation() {
     _imu = new IMU();
     _gnss = GNSSDriverFactory::build();
+    _servoAngle = new TrackerServo(SERVO_ANGLE);
 }
 
 void Navigation::init() {
@@ -39,9 +41,12 @@ void Navigation::init() {
 }
 
 void Navigation::aimingUpdate(unsigned long currentTime) {
+    float dT = currentTime - _previousAimingUpdateTime;
+    _previousAimingUpdateTime = currentTime;
+
     // 1. Get current Euler angles
     attitudeEulerAngles_t attitudeData = _imu->getAttitudeData(currentTime);
-    /*Serial.print("Roll: ");
+    Serial.print("Roll: ");
     Serial.print(attitudeData.values.roll);
     Serial.print("\t");
 
@@ -51,15 +56,28 @@ void Navigation::aimingUpdate(unsigned long currentTime) {
 
     Serial.print("Yaw: ");
     Serial.print(attitudeData.values.yaw);
-    Serial.println();*/
+    Serial.println();
     // 2. Calculate setpoint for yaw and pitch axis
+    int setpoint = 0;
+    Serial.print("setpoint: ");
+    Serial.print(setpoint);
+    Serial.println();
     // 3. Run PID regulator for yaw and pitch axis
+    int influence = computePID(abs(attitudeData.values.pitch), setpoint, 0.1f, 0.0000005f, 0.005f, dT);
+
+    if (setpoint < attitudeData.values.pitch) {
+        influence *= -1;
+    }
+
+    Serial.print("influence: ");
+    Serial.print(influence);
+    Serial.println();
     // 4. Execute PID sum in servos
+    _servoAngle->update(influence);
 }
 
 void Navigation::coordsUpdate() {
     _gnssData = _gnss->getData();
-
 
     Serial.print("GPS Ok: ");
     Serial.print(_gnssData.ok ? "true" : "false");
@@ -89,7 +107,7 @@ void Navigation::update() {
     }
 
     if ((millis() - this->_lastUpdateGNSSTime >= GNNS_LOOP_TIME) || this->_lastUpdateGNSSTime == 0) {
-        this->coordsUpdate();
+        //this->coordsUpdate();
         this->_lastUpdateGNSSTime = millis();
     }
 }

@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2020 Kravchenko Artyom
+ * Copyright (c) 2021 Kravchenko Artyom
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@
 #define H_CONFIG_H
 
 #include <EEPROM.h>
+#include "../common/alignment.h"
 
 #define GET_CONFIG Config::getInstance()->getConfig()
 
@@ -34,6 +35,7 @@ typedef struct AccCal_s {
     float x = 0.0f;
     float y = 0.0f;
     float z = 0.0f;
+    SensorAlign_e alignment = ALIGN_DEFAULT;
 } AccCal_t;
 
 typedef struct CompassCal_s {
@@ -41,6 +43,7 @@ typedef struct CompassCal_s {
     int32_t x = 0;
     int32_t y = 0;
     int32_t z = 0;
+    SensorAlign_e alignment = ALIGN_DEFAULT;
 } CompassCal_t;
 
 typedef struct WiFi_s {
