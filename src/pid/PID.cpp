@@ -25,13 +25,18 @@
 #include <Arduino.h>
 #include "PID.h"
 
-int computePID(float input, float setpoint, float kp, float ki, float kd, float dt) {
+Pid::Pid(float kP, float kI, float kD) {
+  _kP = kP;
+  _kI = kI;
+  _kD = kD;
+}
+
+int Pid::compute(float input, float setpoint, float dT) {
   float err = setpoint - input;
-  static float integral = 0, prevErr = 0;
 
-  integral = integral + (float)err * dt * ki;
-  float D = (err - prevErr) / dt;
-  prevErr = err;
+  _integral = _integral + (float)err * dT * _kI;
+  float D = (err - _prevError) / dT;
+  _prevError = err;
 
-  return err * kp + integral + D * kd;
+  return err * _kP + _integral + D * _kD;
 }

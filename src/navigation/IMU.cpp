@@ -53,6 +53,10 @@ void IMU::init() {
     computeRotationMatrix();
 }
 
+bool IMU::isReady() {
+    return _accGyro->isReady();
+}
+
 attitudeEulerAngles_t IMU::getAttitudeData(unsigned long currentTime) {
     float dT = (currentTime - _previousIMUUpdateTime) * 1e-3;
     _previousIMUUpdateTime = currentTime;
@@ -62,6 +66,7 @@ attitudeEulerAngles_t IMU::getAttitudeData(unsigned long currentTime) {
     fpVector3_t measuredMagBF;
     imuData_t imuData = _accGyro->getData();
     bool magIsReady = _compass->isReady() && _compass->isCalibated();
+    magIsReady = false;
 
     if (magIsReady) {
         compassData_t compassData = _compass->getData();    

@@ -22,19 +22,25 @@
  * SOFTWARE.
  */
 
-#ifndef H_TRACKER_SERVO_H
-#define H_TRACKER_SERVO_H
+#ifndef H_HEADING_SERVO_H
+#define H_HEADING_SERVO_H
 
+#include "Arduino.h"
 #include <ESP32_Servo.h>
+#include "../pid/PID.h"
+#include "../mapping.h"
 
-class TrackerServo {
+class HeadingServo {
 public:
-    TrackerServo(int pin);
-    void update(int influence);
+    HeadingServo();
+    void update(int input, int setpoint, float dT);
 
 protected:
     Servo* _servo;
-    int _prev;
+    Pid* _pid;
+
+    int _centerValue;
+    int _startMovementOffset;
 };
 
 #endif

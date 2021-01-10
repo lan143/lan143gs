@@ -60,6 +60,8 @@ public:
     zeroCalibrationState_e getAccCalibrationState() { return _accGyro->getAccCalibrationState(); }
     zeroCalibrationState_e getCompassCalibration() { return _compass->getCalibrationState(); }
 
+    bool isReady();
+
 protected:
     void mahonyAHRSupdate(
         float dt,

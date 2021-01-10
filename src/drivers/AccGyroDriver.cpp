@@ -47,6 +47,24 @@ void AccGyroDriver::init() {
     zeroCalibrationStartV(&gyroCalibration, CALIBRATING_GYRO_TIME_MS, 32, false);
 }
 
+bool AccGyroDriver::isReady() {
+    if (!sensorReady()) {
+        Serial.println("Sensor not ready");
+        return false;
+    }
+
+    if (accCalibrationState != ZERO_CALIBRATION_DONE) {
+        Serial.println("Acc not calibrated");
+        return false;
+    }
+
+    if (gyroCalibration.params.state != ZERO_CALIBRATION_DONE) {
+        return false;
+    }
+
+    return true;
+}
+
 imuData_t AccGyroDriver::getData() {
     updateData();
     updateGyroData();

@@ -22,46 +22,22 @@
  * SOFTWARE.
  */
 
-#include "MPU6050Driver.h"
+#ifndef H_ANGLE_SERVO_H
+#define H_ANGLE_SERVO_H
 
-#define BUFFER_SIZE 100
+#include <ESP32_Servo.h>
+#include "../pid/PID.h"
+#include "../mapping.h"
 
-MPU6050Driver::MPU6050Driver() {
-    _mpu = new MPU6050(IMU_ADDR);
-}
+class AngleServo {
+public:
+    AngleServo();
+    void update(int input, int setpoint, float dT);
 
-void MPU6050Driver::driverInit() {
-    _mpu->initialize();
-    _mpu->setFullScaleAccelRange(MPU6050_ACCEL_FS_16);
-    _mpu->setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
+protected:
+    Servo* _servo;
+    Pid* _pid;
+    int _prev;
+};
 
-    gyroScale = 1.0f / 16.4f;
-    accScale = 512 * 4;
-    
-    _mpu->setXAccelOffset(0);
-    _mpu->setYAccelOffset(0);
-    _mpu->setZAccelOffset(0);
-    _mpu->setXGyroOffset(0);
-    _mpu->setYGyroOffset(0);
-    _mpu->setZGyroOffset(0);
-
-    _isReady = _mpu->testConnection();
-    Serial.println(_isReady ? "MPU6050 OK" : "MPU6050 FAIL");
-}
-
-bool MPU6050Driver::sensorReady() {
-    return _isReady;
-}
-
-void MPU6050Driver::updateData() {
-    int16_t accX, accY, accZ, gyroX, gyroY, gyroZ;
-    _mpu->getMotion6(&accX, &accY, &accZ, &gyroX, &gyroY, &gyroZ);
-
-    accADCRaw[X] = accX;
-    accADCRaw[Y] = accY;
-    accADCRaw[Z] = accZ;
-
-    gyroADCRaw[X] = gyroX;
-    gyroADCRaw[Y] = gyroY;
-    gyroADCRaw[Z] = gyroZ;
-}
+#endif

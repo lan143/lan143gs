@@ -29,7 +29,8 @@
 #include "IMU.h"
 #include "../drivers/GNSSDriver.h"
 #include "../mapping.h"
-#include "../servos/TrackerServo.h"
+#include "../servos/AngleServo.h"
+#include "../servos/HeadingServo.h"
 
 #define AIMING_LOOP_TIME 10 // 100 Hz
 #define GNNS_LOOP_TIME 1000 // 1 Hz
@@ -63,7 +64,8 @@ protected:
 
     gnssData_s _gnssData;
 
-    TrackerServo* _servoAngle;
+    AngleServo* _angleServo;
+    HeadingServo* _headingServo;
 
     unsigned long _lastUpdateAimingTime = 0;
     unsigned long _lastUpdateGNSSTime = 0;

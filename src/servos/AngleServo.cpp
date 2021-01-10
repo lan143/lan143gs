@@ -22,16 +22,29 @@
  * SOFTWARE.
  */
 
-#include "TrackerServo.h"
+#include "Arduino.h"
+#include "AngleServo.h"
 
-TrackerServo::TrackerServo(int pin) {
+AngleServo::AngleServo() {
+    // TODO: load from config
+    int centerValue = 1250;
+
     _servo = new Servo();
-    _servo->attach(pin);
-    _servo->writeMicroseconds(1200);
-    _prev = 1500;
+    _servo->attach(SERVO_ANGLE);
+    _servo->writeMicroseconds(centerValue);
+    _prev = centerValue;
+
+    // TODO: load coeffs from config
+    _pid = new Pid(0.1f, 0.0000005f, 0.005f);
 }
 
-void TrackerServo::update(int influence) {
+void AngleServo::update(int input, int setpoint, float dT) {
+    int influence = _pid->compute(abs(input), setpoint, dT);
+
+    if (setpoint < input) {
+        influence *= -1;
+    }
+
     int newVal = _prev + influence;
 
     if (newVal > 2000) {

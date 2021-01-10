@@ -22,46 +22,49 @@
  * SOFTWARE.
  */
 
-#include "MPU6050Driver.h"
+#include "HeadingServo.h"
 
-#define BUFFER_SIZE 100
+HeadingServo::HeadingServo() {
+    // TODO: Make servo calibration and store and load this values from config
+    _centerValue = 1489;
+    _startMovementOffset = 54;
 
-MPU6050Driver::MPU6050Driver() {
-    _mpu = new MPU6050(IMU_ADDR);
+    _servo = new Servo();
+    _servo->attach(SERVO_HEADING);
+    _servo->writeMicroseconds(_centerValue);
+
+    // TODO: load coeffs from config
+    _pid = new Pid(0.1f, 0.0f, 0.0f);
 }
 
-void MPU6050Driver::driverInit() {
-    _mpu->initialize();
-    _mpu->setFullScaleAccelRange(MPU6050_ACCEL_FS_16);
-    _mpu->setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
+void HeadingServo::update(int input, int setpoint, float dT) {
+    int16_t error = input - setpoint;
 
-    gyroScale = 1.0f / 16.4f;
-    accScale = 512 * 4;
-    
-    _mpu->setXAccelOffset(0);
-    _mpu->setYAccelOffset(0);
-    _mpu->setZAccelOffset(0);
-    _mpu->setXGyroOffset(0);
-    _mpu->setYGyroOffset(0);
-    _mpu->setZGyroOffset(0);
+    if (error <= -1800) {
+        error += 3600;
+    }
 
-    _isReady = _mpu->testConnection();
-    Serial.println(_isReady ? "MPU6050 OK" : "MPU6050 FAIL");
-}
+    if (error >= 1800) {
+        error -= 3600;
+    }
 
-bool MPU6050Driver::sensorReady() {
-    return _isReady;
-}
+    int influence = _pid->compute(abs(error), 0, dT);
 
-void MPU6050Driver::updateData() {
-    int16_t accX, accY, accZ, gyroX, gyroY, gyroZ;
-    _mpu->getMotion6(&accX, &accY, &accZ, &gyroX, &gyroY, &gyroZ);
+    if (error < 0) {
+        influence = _centerValue + _startMovementOffset - influence;
+    } else if (error > 0) {
+        influence = _centerValue - _startMovementOffset + influence;
+    } else {
+        influence = _centerValue;
+    }
 
-    accADCRaw[X] = accX;
-    accADCRaw[Y] = accY;
-    accADCRaw[Z] = accZ;
+    if (influence > 2000) {
+        influence = 2000;
+    }
 
-    gyroADCRaw[X] = gyroX;
-    gyroADCRaw[Y] = gyroY;
-    gyroADCRaw[Z] = gyroZ;
+    if (influence < 1000) {
+        influence = 1000;
+    }
+
+    _servo->writeMicroseconds(influence);
 }

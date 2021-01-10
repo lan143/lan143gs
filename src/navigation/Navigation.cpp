@@ -32,7 +32,8 @@ Navigation* Navigation::_instance = 0;
 Navigation::Navigation() {
     _imu = new IMU();
     _gnss = GNSSDriverFactory::build();
-    _servoAngle = new TrackerServo(SERVO_ANGLE);
+    _angleServo = new AngleServo();
+    _headingServo = new HeadingServo();
 }
 
 void Navigation::init() {
@@ -43,37 +44,27 @@ void Navigation::init() {
 void Navigation::aimingUpdate(unsigned long currentTime) {
     float dT = currentTime - _previousAimingUpdateTime;
     _previousAimingUpdateTime = currentTime;
-
     // 1. Get current Euler angles
     attitudeEulerAngles_t attitudeData = _imu->getAttitudeData(currentTime);
-    Serial.print("Roll: ");
-    Serial.print(attitudeData.values.roll);
-    Serial.print("\t");
 
-    Serial.print("Pitch: ");
-    Serial.print(attitudeData.values.pitch);
-    Serial.print("\t");
+    if (_imu->isReady()) {
+        /*Serial.print("Roll: ");
+        Serial.print(attitudeData.values.roll);
+        Serial.print("\t");
 
-    Serial.print("Yaw: ");
-    Serial.print(attitudeData.values.yaw);
-    Serial.println();
-    // 2. Calculate setpoint for yaw and pitch axis
-    int setpoint = 0;
-    Serial.print("setpoint: ");
-    Serial.print(setpoint);
-    Serial.println();
-    // 3. Run PID regulator for yaw and pitch axis
-    int influence = computePID(abs(attitudeData.values.pitch), setpoint, 0.1f, 0.0000005f, 0.005f, dT);
+        Serial.print("Pitch: ");
+        Serial.print(attitudeData.values.pitch);
+        Serial.print("\t");
 
-    if (setpoint < attitudeData.values.pitch) {
-        influence *= -1;
+        Serial.print("Yaw: ");
+        Serial.print(attitudeData.values.yaw);
+        Serial.println();*/
+        // 2. Calculate setpoint for yaw and pitch axis
+        int setpoint = 0;
+        // 3. Run PID regulator for yaw and pitch axis and Execute PID sum in servos
+        _angleServo->update(attitudeData.values.pitch, setpoint, dT);
+        _headingServo->update(attitudeData.values.yaw, setpoint, dT);
     }
-
-    Serial.print("influence: ");
-    Serial.print(influence);
-    Serial.println();
-    // 4. Execute PID sum in servos
-    _servoAngle->update(influence);
 }
 
 void Navigation::coordsUpdate() {

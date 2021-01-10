@@ -25,6 +25,19 @@
 #ifndef H_PID_H
 #define H_PID_H
 
-extern int computePID(float input, float setpoint, float kp, float ki, float kd, float dt);
+class Pid {
+public:
+    Pid(float kP, float kI, float kD);
+
+    int compute(float input, float setpoint, float dT);
+
+protected:
+    float _integral = 0.0f;
+    float _prevError = 0.0f;
+
+    float _kP;
+    float _kI;
+    float _kD;
+};
 
 #endif

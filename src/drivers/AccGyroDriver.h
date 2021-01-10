@@ -45,6 +45,7 @@ typedef struct imuData_s {
 class AccGyroDriver {
 public:
     void init();
+    bool isReady();
 
     imuData_t getData();
 
@@ -52,6 +53,7 @@ public:
     zeroCalibrationState_e getAccCalibrationState() { return accCalibrationState; }
 protected:
     virtual void driverInit();
+    virtual bool sensorReady();
     virtual void updateData();
 
     void updateGyroData();

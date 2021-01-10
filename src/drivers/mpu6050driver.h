@@ -38,9 +38,11 @@ public:
 
 protected:
     void driverInit();
+    bool sensorReady();
 
 protected:
     MPU6050* _mpu;
+    bool _isReady = false;
 };
 
 #endif

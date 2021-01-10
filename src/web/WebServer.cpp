@@ -67,6 +67,9 @@ void WebServer::calibrateAccStatus(AsyncWebServerRequest *request) {
 
 void WebServer::startCalibrateCompass(AsyncWebServerRequest *request) {
     Navigation::getInstance()->startCompassCalibration();
+
+    AsyncWebServerResponse *response = request->beginResponse(201, "application/json");
+    request->send(response);
 }
 
 void WebServer::calibrateCompassStatus(AsyncWebServerRequest *request) {
